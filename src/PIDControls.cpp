@@ -10,7 +10,7 @@ void tareMotors() {
 }
 
 
-void turn(double heading, double miliseconds) { //turns a certain amount of degrees
+/*void turn(double heading, double miliseconds) { //turns a certain amount of degrees
    /*double angle = fmod(heading - inertial.get_heading(), 360); //Amigo Code
    if (angle > 180) angle -= 360;
    if (angle < -180) angle += 360;
@@ -57,7 +57,7 @@ void turn(double heading, double miliseconds) { //turns a certain amount of degr
    RB_MOTOR.move_voltage(0);
    RM_MOTOR.move_voltage(0);
    RF_MOTOR.move_voltage(0);*/
-   tareMotors();
+   /*tareMotors();
    pros::lcd::print(0, "motor was moved");
    double rightMeasured = 0;
    double leftMeasured = 0;
@@ -102,59 +102,44 @@ void turn(double heading, double miliseconds) { //turns a certain amount of degr
    RB_MOTOR.move_velocity(0);
    RM_MOTOR.move_velocity(0);
    RF_MOTOR.move_velocity(0);
-}
+}*/
 
 
 void move(double distance) {
-   LF_MOTOR.tare_position();
-   LM_MOTOR.tare_position();
-   LB_MOTOR.tare_position();
-   RB_MOTOR.tare_position();
-   RM_MOTOR.tare_position();
-   RF_MOTOR.tare_position();
-
-
+   double rightOutput = 0.0;
+   double leftOutput = 0.0;
    distance *= driveTicksPerInch;
-
-
-   double integral = 10;
-   double lastError = distance;
-
-
-   int restedStates = 0;
-   int stalledStates = 0;
+   double target = distance;
+   double integral = 0.0;
    double rightMeasured = ((RB_MOTOR.get_position() + RF_MOTOR.get_position() + RM_MOTOR.get_position())/3);
    double leftMeasured = ((LB_MOTOR.get_position() + LF_MOTOR.get_position() + LM_MOTOR.get_position())/3);
-   double error = 0;
-   /*while (restedStates < 5 && stalledStates < 50) {//amigo code
-       double error = (distance - (rightMeasured + leftMeasured)/2);
-       if (fabs(error) < 2.5*driveTicksPerInch) integral += error;
-       if (fabs(error) < 0.05*driveTicksPerInch) integral = 0;
-
-
-       if (fabs(error - lastError) < 0.05*driveTicksPerInch) stalledStates++;
-       else stalledStates = 0;
-
-
-       double out = kP * error + kI * integral + kD * (error - lastError);
-       RB_MOTOR.move_voltage(out);
-       RM_MOTOR.move_voltage(out);
-       RF_MOTOR.move_voltage(out);
-       LF_MOTOR.move_voltage(out);
-       LM_MOTOR.move_voltage(out);
-       LB_MOTOR.move_voltage(out);
-
-
-       lastError = error;
-
-
-       pros::delay(10);
-
-
-       if (fabs(distance - (leftMeasured+ rightMeasured)/2) < 0.1*driveTicksPerInch) restedStates++;
-       else restedStates = 0;
-   }*/
-   stopMotors();
+   double leftVelocity = ((LB_MOTOR.get_actual_velocity() + LF_MOTOR.get_actual_velocity() + LM_MOTOR.get_actual_velocity())/3);
+   double rightVelocity = ((RB_MOTOR.get_actual_velocity() + RF_MOTOR.get_actual_velocity() + RM_MOTOR.get_actual_velocity())/3);//average right velocity in rpms
+   double error = 0.0;//error between the two sides
+   double error2 = 0.0;//error between real velocities and fake velocities
+   double distanceT = 0.0;//area under the curve
+   double distanceT2 = 0.0;//actual position in ticks
+   rightVelocity * rpmToTps;
+   leftVelocity * rpmToTps;
+   while(target > distanceT2){
+    rightVelocity * 0.01;//how much time passed since last taking of velocity, then multiply by seconds passed to get ticks traveled
+    leftVelocity* 0.01;
+    if(rightVelocity > leftVelocity){
+        error = rightVelocity - leftVelocity;
+    }
+    distanceT += ((rightVelocity + leftVelocity)/2.0);//better way to calculate distance traveled?
+    distanceT2 = (rightMeasured + leftMeasured)/2.0;
+    rightOutput = ((target - distanceT)*kI - (error * kD) - (distanceT-distanceT2)*kP);//missing length left in ticks 
+    leftOutput = ((target - distanceT)*kI + (error * kD) -(distanceT-distanceT2)*kP);
+    moveRight(rightOutput);
+    moveLeft(leftOutput);
+    pros::lcd::print(0, "right output %f", rightOutput);
+    double rightMeasured = ((RB_MOTOR.get_position() + RF_MOTOR.get_position() + RM_MOTOR.get_position())/3);
+    double leftMeasured = ((LB_MOTOR.get_position() + LF_MOTOR.get_position() + LM_MOTOR.get_position())/3);
+    double leftVelocity = ((LB_MOTOR.get_actual_velocity() + LF_MOTOR.get_actual_velocity() + LM_MOTOR.get_actual_velocity())/3);
+    double rightVelocity = ((RB_MOTOR.get_actual_velocity() + RF_MOTOR.get_actual_velocity() + RM_MOTOR.get_actual_velocity())/3);//average right velocity in rpms
+   }
+   stopMotors();//hit the ideal distance so stop yourself
 }
 
 
@@ -282,4 +267,14 @@ void stopMotors(){
    RB_MOTOR.move_voltage(0);
    RM_MOTOR.move_voltage(0);
    RF_MOTOR.move_voltage(0);
+}
+void moveLeft(double output){
+    LB_MOTOR.move_velocity(output);
+    LM_MOTOR.move_velocity(output);
+    LF_MOTOR.move_velocity(output);
+}
+void moveRight(double output){
+    RB_MOTOR.move_velocity(output);
+    RM_MOTOR.move_velocity(output);
+    RF_MOTOR.move_velocity(output);
 }

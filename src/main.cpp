@@ -1,7 +1,6 @@
 #include "main.h"
 #include "Functions.h"
 #include "PIDControls.h"
-#include "raceAuton.h"
 #include "MotorInit.h"
 /**
  * A callback function for LLEMU's center button.
@@ -78,11 +77,12 @@ void autonomous() {}
  */
 void opcontrol() {
 	while(true){
-driveFunc(master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X));
+/*driveFunc(master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X));
        moveIntake();
        moveArm();
        /*if(master.get_digital(pros::E_CONTROLLER_))
    }*/
+  move(1);
 }
 
 }
