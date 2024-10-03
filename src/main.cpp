@@ -76,13 +76,39 @@ void autonomous() {}
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-	while(true){
-/*driveFunc(master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X));
-       moveIntake();
-       moveArm();
-       /*if(master.get_digital(pros::E_CONTROLLER_))
-   }*/
-  move(1);
-}
+	Arm.tare_position();
+	intake.tare_position();
+	bool mode = false;
+	bool mode2 = true;
+	move(24,0.1,0.7, 0.1);
+	pros::delay(200);
+	tareMotors();
+	turn(90);
 
+	/*while(true){
+		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)){
+			if(mode == true){
+				clamper.set_value(1);
+				mode = false;
+				pros::delay(10);
+				pros::lcd::print(0, "mode = false");
+			}
+			else{
+				clamper.set_value(0);
+				mode = true;
+				pros::delay(10);
+				pros::lcd::print(0, "mode = true");
+			}
+		}
+		driveFunc(master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X));
+    	moveIntake();
+		moveArm();
+		sigmaFlipOut185();
+	    pros::delay(10);
+   }*/
+   //clamper.set_value(1);
+   //pros::delay(1000);
+   //turn(90);
+   //PIDArm();  
+   //}
 }

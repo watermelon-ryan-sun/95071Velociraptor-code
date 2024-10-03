@@ -10,7 +10,11 @@ void tareMotors() {
 }
 
 
-/*void turn(double heading, double miliseconds) { //turns a certain amount of degrees
+void turn(double heading) { //turns a certain amount of degrees
+tareMotors();
+    double Kp = 0.31;
+    double Kd = 0.1;
+    double Ki = 0.1;
    /*double angle = fmod(heading - inertial.get_heading(), 360); //Amigo Code
    if (angle > 180) angle -= 360;
    if (angle < -180) angle += 360;
@@ -57,58 +61,71 @@ void tareMotors() {
    RB_MOTOR.move_voltage(0);
    RM_MOTOR.move_voltage(0);
    RF_MOTOR.move_voltage(0);*/
-   /*tareMotors();
-   pros::lcd::print(0, "motor was moved");
-   double rightMeasured = 0;
-   double leftMeasured = 0;
-   double angle = heading;
-   double target = (((((angle / 180) * M_PI) * radiusCenter) /2)*driveTicksPerInch); //convert to radians, multiply by the radius for arc length, divide by two, cause you're moving both sides in opposite directions
-   pros::lcd::print(0, "target is %f", target);
-   double error = target - (rightMeasured + leftMeasured)/2;
-   double integral = 0;
-   double lastError = 0;
-   double integralCap = 200;
-   double integralMin = 10;//prevention of integral windup
-   while(abs(error) > 0){
-       pros::lcd::print(5, "entered loop, %f", error);
-       integral += error;
-       if(integral > integralCap){//windup
-           integral = integralCap;
-       }
-       if(integral > integralMin){
-           integral = 0;
-       }
-       double out = (error * kP) + (integral * kI) + (lastError * kP);
-       lastError = error;
-       pros::lcd::print(0, "integral = %f", integral);
-       pros::lcd::print(1, "error = %f", error);
-       pros::lcd::print(2, "target = %f", target);
-       pros::lcd::print(4, "output = %f", out);
-       RB_MOTOR.move_absolute(-target,out);
-       RM_MOTOR.move_absolute(-target,out);
-       RF_MOTOR.move_absolute(-target,out);
-       LF_MOTOR.move_absolute(target,out);
-       LM_MOTOR.move_absolute(target,out);
-       LB_MOTOR.move_absolute(target,out);
-       pros::lcd::print(6, "stopped motors");
-       rightMeasured = ((RB_MOTOR.get_position() + RF_MOTOR.get_position() + RM_MOTOR.get_position())/3);
-       leftMeasured = ((LB_MOTOR.get_position() + LF_MOTOR.get_position() + LM_MOTOR.get_position())/3);
-       lastError = error;
-       error = target - (rightMeasured + leftMeasured)/2;
-   }
-   LF_MOTOR.move_velocity(0);
-   LM_MOTOR.move_velocity(0);
-   LB_MOTOR.move_velocity(0);
-   RB_MOTOR.move_velocity(0);
-   RM_MOTOR.move_velocity(0);
-   RF_MOTOR.move_velocity(0);
-}*/
+    double error = heading;
+    if(fabs(error) > 180){
+        error -= 360;
+    }
+    error *= 3.141592;
+    error /= 180;
+    error *= 10;
+    error *= inchToTicks;
+    error *= 125;
+    heading = error;
+    double prevError = 0;
+    double integral = 0;
+    double threshold = 20;
 
+    while(true){
+        error = heading-(LB_MOTOR.get_position() + LM_MOTOR.get_position() + LF_MOTOR.get_position()-RB_MOTOR.get_position() - RM_MOTOR.get_position() - RF_MOTOR.get_position())/6;
+        integral += error;
+        if(fabs(error)>threshold){
+            integral = 0;
+        }
 
-void move(double distance) {
+        double power = error * Kp + integral * Ki + (error-prevError) * Kd;
+        moveRight(-1*power);
+        moveLeft(power);
+
+        prevError = error;
+        pros::delay(10);
+        if(fabs(error)<0.1){
+            break;
+        }
+        if(fabs(prevError)-fabs(error)<0.05 && fabs(error)<0.4){
+            break;
+        }
+    }
+   stopMotors();
+}
+void PIDArm(){
+    Arm.tare_position();
+    double target = 3150;
+    double traveled = Arm.get_position();
+    double output = 0.0;
+    double error = target;
+    //double lastError = 0.0;
+    //double integral = error;
+    while(target > traveled){
+        error = target - traveled;
+        output = 0;
+        error = target - traveled;
+        Arm.move_velocity(600);
+        traveled = Arm.get_position();
+        pros::delay(10);
+    }
+    Arm.move_velocity(0);
+    Arm.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+}
+void PIDIntake(){
+    intake.tare_position();
+
+}
+
+void move(double distance, double kP, double kI, double kD) {
    double rightOutput = 0.0;
    double leftOutput = 0.0;
    distance *= driveTicksPerInch;
+   distance /= 24.0;
    double target = distance;
    double integral = 0.0;
    double rightMeasured = ((RB_MOTOR.get_position() + RF_MOTOR.get_position() + RM_MOTOR.get_position())/3);
@@ -122,28 +139,69 @@ void move(double distance) {
    rightVelocity * rpmToTps;
    leftVelocity * rpmToTps;
    while(target > distanceT2){
-    rightVelocity * 0.01;//how much time passed since last taking of velocity, then multiply by seconds passed to get ticks traveled
-    leftVelocity* 0.01;
+    rightVelocity = rightVelocity * 0.01;//how much time passed since last taking of velocity, then multiply by seconds passed to get ticks traveled
+    leftVelocity = leftVelocity* 0.01;
     if(rightVelocity > leftVelocity){
         error = rightVelocity - leftVelocity;
     }
     distanceT += ((rightVelocity + leftVelocity)/2.0);//better way to calculate distance traveled?
     distanceT2 = (rightMeasured + leftMeasured)/2.0;
     rightOutput = ((target - distanceT)*kI - (error * kD) - (distanceT-distanceT2)*kP);//missing length left in ticks 
-    leftOutput = ((target - distanceT)*kI + (error * kD) -(distanceT-distanceT2)*kP);
+    leftOutput = ((target - distanceT)*kI + (error * kD) - ((distanceT-distanceT2)*kP));
+    pros::lcd::print(0, "before calling moveRight");
     moveRight(rightOutput);
+    pros::lcd::print(0, "after calling moveRight");
     moveLeft(leftOutput);
     pros::lcd::print(0, "right output %f", rightOutput);
-    double rightMeasured = ((RB_MOTOR.get_position() + RF_MOTOR.get_position() + RM_MOTOR.get_position())/3);
-    double leftMeasured = ((LB_MOTOR.get_position() + LF_MOTOR.get_position() + LM_MOTOR.get_position())/3);
-    double leftVelocity = ((LB_MOTOR.get_actual_velocity() + LF_MOTOR.get_actual_velocity() + LM_MOTOR.get_actual_velocity())/3);
-    double rightVelocity = ((RB_MOTOR.get_actual_velocity() + RF_MOTOR.get_actual_velocity() + RM_MOTOR.get_actual_velocity())/3);//average right velocity in rpms
+    rightMeasured = ((RB_MOTOR.get_position() + RF_MOTOR.get_position() + RM_MOTOR.get_position())/3);
+    leftMeasured = ((LB_MOTOR.get_position() + LF_MOTOR.get_position() + LM_MOTOR.get_position())/3);
+    leftVelocity = ((LB_MOTOR.get_actual_velocity() + LF_MOTOR.get_actual_velocity() + LM_MOTOR.get_actual_velocity())/3);
+    rightVelocity = ((RB_MOTOR.get_actual_velocity() + RF_MOTOR.get_actual_velocity() + RM_MOTOR.get_actual_velocity())/3);//average right velocity in rpms
+    pros::delay(10);
    }
    stopMotors();//hit the ideal distance so stop yourself
 }
-
-
-void move_straight(double distance) {
+void moveBack(double distance, double kP, double kI, double kD) {
+   double rightOutput = 0.0;
+   double leftOutput = 0.0;
+   distance *= driveTicksPerInch;
+   distance /= 24.0;
+   double target = -distance;
+   double integral = 0.0;
+   double rightMeasured = ((RB_MOTOR.get_position() + RF_MOTOR.get_position() + RM_MOTOR.get_position())/3);
+   double leftMeasured = ((LB_MOTOR.get_position() + LF_MOTOR.get_position() + LM_MOTOR.get_position())/3);
+   double leftVelocity = ((LB_MOTOR.get_actual_velocity() + LF_MOTOR.get_actual_velocity() + LM_MOTOR.get_actual_velocity())/3);
+   double rightVelocity = ((RB_MOTOR.get_actual_velocity() + RF_MOTOR.get_actual_velocity() + RM_MOTOR.get_actual_velocity())/3);//average right velocity in rpms
+   double error = 0.0;//error between the two sides
+   double error2 = 0.0;//error between real velocities and fake velocities
+   double distanceT = 0.0;//area under the curve
+   double distanceT2 = 0.0;//actual position in ticks
+   rightVelocity * rpmToTps;
+   leftVelocity * rpmToTps;
+   while(target < distanceT2){
+    rightVelocity = rightVelocity * 0.01;//how much time passed since last taking of velocity, then multiply by seconds passed to get ticks traveled
+    leftVelocity = leftVelocity* 0.01;
+    if(rightVelocity > leftVelocity){
+        error = rightVelocity - leftVelocity;
+    }
+    distanceT += ((rightVelocity + leftVelocity)/2.0);//better way to calculate distance traveled?
+    distanceT2 = (rightMeasured + leftMeasured)/2.0;
+    rightOutput = ((target - distanceT)*kI - (error * kD) - (distanceT-distanceT2)*kP);//missing length left in ticks 
+    leftOutput = ((target - distanceT)*kI + (error * kD) - ((distanceT-distanceT2)*kP));
+    pros::lcd::print(0, "before calling moveRight");
+    moveRight(rightOutput);
+    pros::lcd::print(0, "after calling moveRight");
+    moveLeft(leftOutput);
+    pros::lcd::print(0, "right output %f", rightOutput);
+    rightMeasured = -((RB_MOTOR.get_position() + RF_MOTOR.get_position() + RM_MOTOR.get_position())/3);
+    leftMeasured = -((LB_MOTOR.get_position() + LF_MOTOR.get_position() + LM_MOTOR.get_position())/3);
+    leftVelocity = -((LB_MOTOR.get_actual_velocity() + LF_MOTOR.get_actual_velocity() + LM_MOTOR.get_actual_velocity())/3);
+    rightVelocity = -((RB_MOTOR.get_actual_velocity() + RF_MOTOR.get_actual_velocity() + RM_MOTOR.get_actual_velocity())/3);//average right velocity in rpms
+    pros::delay(10);
+   }
+   stopMotors();//hit the ideal distance so stop yourself
+}
+/*void move_straight(double distance) {
    double initialHeading = inertial.get_rotation();
    LF_MOTOR.tare_position();
    LM_MOTOR.tare_position();
@@ -213,7 +271,7 @@ void move_straight(double distance) {
        if (fabs(distance - (rightMeasured + leftMeasured)/2) < 0.1*driveTicksPerInch) restedStates++;
        else restedStates = 0;
    }
-   stopMotors();*/
+   stopMotors();
     double rightMeasured = ((RB_MOTOR.get_position() + RF_MOTOR.get_position() + RM_MOTOR.get_position())/3);
    double leftMeasured = ((LB_MOTOR.get_position() + LF_MOTOR.get_position() + LM_MOTOR.get_position())/3);
    double target = distance*driveTicksPerInch; //convert to radians, multiply by the radius for arc length, divide by two, cause you're moving both sides in opposite directions
@@ -247,7 +305,7 @@ void move_straight(double distance) {
        LB_MOTOR.move_absolute(out,out);
    }
    stopMotors();
-}
+}*/
 
 
 void RunIntake(double target){

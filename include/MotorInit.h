@@ -15,10 +15,11 @@ static pros::Motor LB_MOTOR(10,pros::E_MOTOR_GEAR_BLUE, true);
 static pros::Motor LF_MOTOR(3,pros::E_MOTOR_GEAR_BLUE, true);
 static pros::Motor LM_MOTOR(7,pros::E_MOTOR_GEAR_BLUE, true);
 static pros::Rotation IntakeSensor(9);
-static pros::ADIDigitalOut clamper ('A'); // extending pulls clamp up
+static pros::ADIDigitalOut clamper ('B'); // extending pulls clamp up
 static pros::Imu inertial(2);
 static pros::Motor intake(8, pros::E_MOTOR_GEAR_GREEN, false);
 static pros::Motor Arm(16, pros::E_MOTOR_GEAR_RED, false);
+static pros::ADIDigitalOut flipOut('A');//flipout for arm, 
 
 
 #endif // _PROS_MORTORINIT_H_

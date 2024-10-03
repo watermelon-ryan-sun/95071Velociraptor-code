@@ -1,6 +1,7 @@
 #include "Functions.h"
 #include "MotorInit.h"
 #include "PIDControls.h"
+#include "main.h"
 void autonSelector() {
    //loops through autonomous options until you pick a desired one. If you loop thru all, it will repeat
    int selected = 1;
@@ -13,8 +14,8 @@ void driveFunc(double power, double turn) {
    //puts controls into a cubed function to avoid jerk(lurch)
    double left = power + (turn * 0.6);
    double right = power -(turn * 0.6);
-   double leftCubed = (600*left*left*left);
-   double rightCubed = (600*right*right*right);
+   double leftCubed = (400*left*left*left);
+   double rightCubed = (400*right*right*right);
    leftCubed /= (127*127*127);
    rightCubed /= (127*127*127);
    if(abs(rightCubed) >= 500){
@@ -29,15 +30,39 @@ void driveFunc(double power, double turn) {
    LF_MOTOR.move_velocity(leftCubed);
 }
 
-
+/*void clampTeleOP(){
+   if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)){
+      if(mode = true){
+         clampDown();
+         mode = false;
+      }
+      else{
+         clampRelease();
+         mode = true;
+      }
+   }
+}*/
+void sigmaFlipOut185(){
+   if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B)){
+      if(mode2 == true){
+         flipOut.set_value(1);
+         mode2 = false;
+      }
+      else{
+         flipOut.set_value(0);
+         mode2 = true;
+         }
+   }
+}
 void clampDown() {
-   clamper.set_value(false);
+   clamper.set_value(1);
 }
 
 
 void clampRelease() {
-   clamper.set_value(true);
+   clamper.set_value(0);
 }
+
 
 
 /*void driveIntake() {
@@ -48,11 +73,13 @@ void clampRelease() {
   
 }*/
 void moveIntake(){
+   pros::lcd::print(0, "motor position: %f", intake.get_position());
    if(master.get_digital(DIGITAL_R1)){
-       intake.move_velocity(200);
+       intake.move_velocity(600);
+       pros::delay(200);
    }
    else if(master.get_digital(DIGITAL_R2)){
-       intake.move_velocity(-200);
+       intake.move_velocity(-300);
    }
    else{
        intake.move_velocity(0);
@@ -60,9 +87,14 @@ void moveIntake(){
 }
 void moveArm(){
    if(master.get_digital(DIGITAL_L1)){
-       Arm.move_absolute(300,200);
+       Arm.move_velocity(200);
+   }
+   else if(master.get_digital(DIGITAL_L2)){
+       Arm.move_velocity(-200);
    }
    else{
-       Arm.move_absolute(0,200);
+      Arm.move_velocity(0);
+      Arm.set_brake_mode(MOTOR_BRAKE_HOLD);
    }
+
 }
