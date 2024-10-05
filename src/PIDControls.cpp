@@ -12,9 +12,9 @@ void tareMotors() {
 
 void turn(double heading) { //turns a certain amount of degrees
 tareMotors();
-    double Kp = 0.31;
-    double Kd = 0.1;
-    double Ki = 0.1;
+    double Kp = 0.3;
+    double Kd = 0.3;
+    double Ki = 0.3;
    /*double angle = fmod(heading - inertial.get_heading(), 360); //Amigo Code
    if (angle > 180) angle -= 360;
    if (angle < -180) angle += 360;
@@ -66,10 +66,8 @@ tareMotors();
         error -= 360;
     }
     error *= 3.141592;
-    error /= 180;
-    error *= 10;
-    error *= inchToTicks;
-    error *= 125;
+    error /= 360;
+    error *= driveTicksPerInch;
     heading = error;
     double prevError = 0;
     double integral = 0;
@@ -88,7 +86,7 @@ tareMotors();
 
         prevError = error;
         pros::delay(10);
-        if(fabs(error)<0.1){
+        if(error<0.1){
             break;
         }
         if(fabs(prevError)-fabs(error)<0.05 && fabs(error)<0.4){
@@ -122,6 +120,7 @@ void PIDIntake(){
 }
 
 void move(double distance, double kP, double kI, double kD) {
+    tareMotors();
    double rightOutput = 0.0;
    double leftOutput = 0.0;
    distance *= driveTicksPerInch;
@@ -184,8 +183,8 @@ void moveBack(double distance, double kP, double kI, double kD) {
     if(rightVelocity > leftVelocity){
         error = rightVelocity - leftVelocity;
     }
-    distanceT += ((rightVelocity + leftVelocity)/2.0);//better way to calculate distance traveled?
-    distanceT2 = (rightMeasured + leftMeasured)/2.0;
+    distanceT -= ((rightVelocity + leftVelocity)/2.0);//better way to calculate distance traveled?
+    distanceT2 = -(rightMeasured + leftMeasured)/2.0;
     rightOutput = ((target - distanceT)*kI - (error * kD) - (distanceT-distanceT2)*kP);//missing length left in ticks 
     leftOutput = ((target - distanceT)*kI + (error * kD) - ((distanceT-distanceT2)*kP));
     pros::lcd::print(0, "before calling moveRight");
@@ -311,10 +310,10 @@ void moveBack(double distance, double kP, double kI, double kD) {
 void RunIntake(double target){
    intake.tare_position();
    target = 0;
-   while(intake.get_position() >= 0){
-
-
-   }
+   intake.move_absolute(2100,600);
+   pros::delay(200);
+   intake.move_absolute(500,600);
+   //intake.move_absolute(3200,200);
 }
 
 
@@ -335,4 +334,10 @@ void moveRight(double output){
     RB_MOTOR.move_velocity(output);
     RM_MOTOR.move_velocity(output);
     RF_MOTOR.move_velocity(output);
+}
+void putDownArm(){
+    Arm.move_velocity(-300);
+    pros::delay(1000);
+    Arm.move_velocity(0);
+
 }

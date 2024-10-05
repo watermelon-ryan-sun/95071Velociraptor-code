@@ -6,7 +6,7 @@ void rightSideAwp(){
     pros::delay(200);
     clampDown();
     pros::delay(200);
-    turn(-90,900);
+    turn(-90);
     pros::delay(200);
     
 

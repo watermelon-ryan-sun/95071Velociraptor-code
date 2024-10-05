@@ -80,12 +80,39 @@ void opcontrol() {
 	intake.tare_position();
 	bool mode = false;
 	bool mode2 = true;
-	move(24,0.1,0.7, 0.1);
-	pros::delay(200);
-	tareMotors();
+	moveBack(36,0.1,0.3,0.2);
+	pros::delay(50);
+	clampDown();
+	pros::delay(50);
+	turn(-90);
+	pros::delay(50);
+	move(26,0.1,0.3,0.2);
+	pros::delay(50);
+	RunIntake(2001021);
+	pros::delay(50);
+	flipOut.set_value(1);
+	moveArm();
+	pros::delay(50);
+	turn(75);
+	pros::delay(50);
+	move(135.76,0.1,0.3,0.2);
+	pros::delay(50);
+	moveBack(24,0.1,0.3,0.1);
+	pros::delay(50);
 	turn(90);
+	pros::delay(50);
+	move(48,0.1,0.3,0.1);
 
-	/*while(true){
+
+	//move(26,0.1,0.3, 0.2);
+	//pros::delay(200);
+	//pros::delay(200);
+	//RunIntake(100);
+	//turn(45);
+	//moveBack(24,0.1,0.7, 0.1);
+	//pros::delay(200);
+
+	while(true){
 		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)){
 			if(mode == true){
 				clamper.set_value(1);
@@ -105,7 +132,7 @@ void opcontrol() {
 		moveArm();
 		sigmaFlipOut185();
 	    pros::delay(10);
-   }*/
+   }
    //clamper.set_value(1);
    //pros::delay(1000);
    //turn(90);
