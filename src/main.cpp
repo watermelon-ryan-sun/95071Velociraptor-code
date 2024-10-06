@@ -80,28 +80,34 @@ void opcontrol() {
 	intake.tare_position();
 	bool mode = false;
 	bool mode2 = true;
-	moveBack(36,0.1,0.3,0.2);
+	bool mode3 = true;
+	moveBack(48,0.1,0.4,0.2);
 	pros::delay(50);
 	clampDown();
 	pros::delay(50);
-	turn(-90);
+	turn(-90,0.3,0.2,0.4,8,9);
 	pros::delay(50);
-	move(26,0.1,0.3,0.2);
+	move(36,0.1,0.2,0.2);
 	pros::delay(50);
 	RunIntake(2001021);
-	pros::delay(50);
+	pros::delay(1000);
 	flipOut.set_value(1);
-	moveArm();
 	pros::delay(50);
-	turn(75);
+	ringInArm();
+	pros::delay(1000);
+	PIDArm();
 	pros::delay(50);
-	move(135.76,0.1,0.3,0.2);
+	turn(135,0.5,0.2,0.8,138,135);
 	pros::delay(50);
+	move(67.8,0.1,0.3,0.2);
+	pros::delay(50);
+	putDownArm();
+	pros::delay(200);
 	moveBack(24,0.1,0.3,0.1);
 	pros::delay(50);
-	turn(90);
-	pros::delay(50);
-	move(48,0.1,0.3,0.1);
+	//turn(90);
+	//pros::delay(50);
+	//move(48,0.1,0.3,0.1);
 
 
 	//move(26,0.1,0.3, 0.2);
@@ -112,7 +118,7 @@ void opcontrol() {
 	//moveBack(24,0.1,0.7, 0.1);
 	//pros::delay(200);
 
-	while(true){
+	/*while(true){
 		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)){
 			if(mode == true){
 				clamper.set_value(1);
@@ -131,11 +137,12 @@ void opcontrol() {
     	moveIntake();
 		moveArm();
 		sigmaFlipOut185();
+		slowIntake();
 	    pros::delay(10);
    }
    //clamper.set_value(1);
    //pros::delay(1000);
    //turn(90);
    //PIDArm();  
-   //}
+   //}*/
 }

@@ -10,11 +10,8 @@ void tareMotors() {
 }
 
 
-void turn(double heading) { //turns a certain amount of degrees
+void turn(double heading, double Kp, double Kd, double Ki, double O, double U) { //turns a certain amount of degrees
 tareMotors();
-    double Kp = 0.3;
-    double Kd = 0.3;
-    double Ki = 0.3;
    /*double angle = fmod(heading - inertial.get_heading(), 360); //Amigo Code
    if (angle > 180) angle -= 360;
    if (angle < -180) angle += 360;
@@ -67,6 +64,8 @@ tareMotors();
     }
     error *= 3.141592;
     error /= 360;
+    error *= O;
+    error /= U;
     error *= driveTicksPerInch;
     heading = error;
     double prevError = 0;
@@ -86,7 +85,7 @@ tareMotors();
 
         prevError = error;
         pros::delay(10);
-        if(error<0.1){
+        if(abs(error)< 1.5){
             break;
         }
         if(fabs(prevError)-fabs(error)<0.05 && fabs(error)<0.4){
@@ -96,19 +95,18 @@ tareMotors();
    stopMotors();
 }
 void PIDArm(){
-    Arm.tare_position();
-    double target = 3150;
-    double traveled = Arm.get_position();
-    double output = 0.0;
+    Rsensor.reset_position();
+    Rsensor.set_reversed(true);
+    double target = 7500;
+    double traveled = Rsensor.get_angle();
+    //Rsensor.set_data_rate(5);
     double error = target;
     //double lastError = 0.0;
     //double integral = error;
     while(target > traveled){
-        error = target - traveled;
-        output = 0;
-        error = target - traveled;
         Arm.move_velocity(600);
-        traveled = Arm.get_position();
+        traveled = Rsensor.get_angle();
+        pros::lcd::print(0,"sensor : %f",Rsensor.get_angle());
         pros::delay(10);
     }
     Arm.move_velocity(0);
@@ -310,12 +308,12 @@ void moveBack(double distance, double kP, double kI, double kD) {
 void RunIntake(double target){
    intake.tare_position();
    target = 0;
-   intake.move_absolute(2100,600);
-   pros::delay(200);
-   intake.move_absolute(500,600);
+   intake.move_absolute(3300,600);
    //intake.move_absolute(3200,200);
 }
-
+void ringInArm(){
+    intake.move_absolute(-3000,600);
+}
 
 void stopMotors(){
    LF_MOTOR.move_voltage(0);

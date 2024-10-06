@@ -5,6 +5,7 @@
 //global variables
 static int amountOfAuton = 0;
 static bool mode2 = true;
+static bool mode3 = true;
 void autonSelector();
 void driveFunc(double power, double turn);
 void clampDown();

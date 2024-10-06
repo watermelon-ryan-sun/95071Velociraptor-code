@@ -8,7 +8,14 @@ void autonSelector() {
    while(selected < amountOfAuton){
    }
 }
-
+void slowIntake(){
+   if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
+      intake.move_velocity(300);
+   }
+   else if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)){
+      intake.move_velocity(-500);
+   }
+}
 
 void driveFunc(double power, double turn) {
    //puts controls into a cubed function to avoid jerk(lurch)
@@ -73,16 +80,16 @@ void clampRelease() {
   
 }*/
 void moveIntake(){
-   pros::lcd::print(0, "motor position: %f", intake.get_position());
-   if(master.get_digital(DIGITAL_R1)){
-       intake.move_velocity(600);
-       pros::delay(200);
-   }
-   else if(master.get_digital(DIGITAL_R2)){
-       intake.move_velocity(-300);
-   }
-   else{
-       intake.move_velocity(0);
+   if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)){
+      if(mode3 == true){
+         intake.move_velocity(500);
+         mode3 = false;
+      }
+      else{
+         intake.move_velocity(500);
+         intake.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
+         mode3 = true;
+         }
    }
 }
 void moveArm(){

@@ -10,7 +10,7 @@ static const double rpmToTps = 6;
 
 
 void tareMotors();
-void turn(double heading);
+void turn(double heading, double Kp, double Kd, double Ki,double O, double U);
 void move(double distance,double kP, double kI, double kD);
 void move_straight(double distance);
 void RunIntake(double target);
@@ -20,4 +20,6 @@ void moveLeft(double output);
 void moveBack(double distance, double kP, double kI, double kD);
 void PIDArm();
 void PIDIntake();
+void putDownArm();
+void ringInArm();
 #endif // _PROS_PIDCONTROLS_H_
