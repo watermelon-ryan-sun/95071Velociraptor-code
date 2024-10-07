@@ -81,23 +81,27 @@ void opcontrol() {
 	bool mode = false;
 	bool mode2 = true;
 	bool mode3 = true;
-	moveBack(48,0.1,0.4,0.2);
+	moveBack(40.84,0.1,0.3,0.2);
 	pros::delay(50);
 	clampDown();
 	pros::delay(50);
-	turn(-90,0.3,0.2,0.4,8,9);
+	RunIntake(212);
 	pros::delay(50);
-	move(36,0.1,0.2,0.2);
+	turn(45,0.9,20,0.03,7.7,9);
+	pros::delay(50);
+	move(35,0.1,0.25,0.2);
 	pros::delay(50);
 	RunIntake(2001021);
+	pros::lcd::print(0, "Deg %f", IMU.get_rotation());
+	/*master.print (1,4,"Intake temp : %f", Arm.get_temperature());
 	pros::delay(1000);
-	flipOut.set_value(1);
-	pros::delay(50);
-	ringInArm();
+	//flipOut.set_value(1);
+	//pros::delay(50);
+	/*ringInArm();
 	pros::delay(1000);
 	PIDArm();
 	pros::delay(50);
-	turn(135,0.5,0.2,0.8,138,135);
+	turn(-135,2,20,0.05,135.5,135);
 	pros::delay(50);
 	move(67.8,0.1,0.3,0.2);
 	pros::delay(50);
@@ -105,7 +109,7 @@ void opcontrol() {
 	pros::delay(200);
 	moveBack(24,0.1,0.3,0.1);
 	pros::delay(50);
-	//turn(90);
+	/*turn(90);
 	//pros::delay(50);
 	//move(48,0.1,0.3,0.1);
 
@@ -118,7 +122,9 @@ void opcontrol() {
 	//moveBack(24,0.1,0.7, 0.1);
 	//pros::delay(200);
 
-	/*while(true){
+	
+while(true){
+	master.print(0,2,"arm heat : %f", Arm.get_temperature());
 		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)){
 			if(mode == true){
 				clamper.set_value(1);
@@ -132,6 +138,12 @@ void opcontrol() {
 				pros::delay(10);
 				pros::lcd::print(0, "mode = true");
 			}
+		}
+		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
+			intake.move_velocity(350);
+		}
+		else{
+		intake.move_velocity(0);
 		}
 		driveFunc(master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X));
     	moveIntake();

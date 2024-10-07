@@ -15,4 +15,5 @@ void moveIntake();
 void moveArm();
 void clampTeleOP();
 void sigmaFlipOut185();
+void slowIntake();
 #endif // _PROS_FUNCTIONS_H_

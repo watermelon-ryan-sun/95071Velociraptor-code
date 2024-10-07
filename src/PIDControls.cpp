@@ -11,69 +11,18 @@ void tareMotors() {
 
 
 void turn(double heading, double Kp, double Kd, double Ki, double O, double U) { //turns a certain amount of degrees
-tareMotors();
-   /*double angle = fmod(heading - inertial.get_heading(), 360); //Amigo Code
-   if (angle > 180) angle -= 360;
-   if (angle < -180) angle += 360;
-   double targetAngle = inertial.get_rotation() + angle;
-
-
-   double lastError = targetAngle - inertial.get_rotation();
-
-
-   int restedStates = 0;
-   int stalledStates = 0;
-   double integral = 10;
-   while (restedStates < 5 && stalledStates < 50) {
-       double error = targetAngle - inertial.get_rotation();
-       if (fabs(error) < 30) integral += error;
-       if (fabs(error) < 0.1) integral = 0;
-
-
-       if (fabs(error - lastError) < 0.005) stalledStates++;
-       else stalledStates = 0;
-
-
-       double out = kP * error + kI * integral + kD * (error - lastError);
-       RB_MOTOR.move_voltage(-out);
-       RM_MOTOR.move_voltage(-out);
-       RF_MOTOR.move_voltage(-out);
-       LF_MOTOR.move_voltage(out);
-       LM_MOTOR.move_voltage(out);
-       LB_MOTOR.move_voltage(out);
-
-
-       lastError = error;
-
-
-       pros::delay(10);
-
-
-       if (fabs(targetAngle - inertial.get_rotation()) < 2) restedStates++;
-       else restedStates = 0;
-   }
-   LF_MOTOR.move_voltage(0);
-   LM_MOTOR.move_voltage(0);
-   LB_MOTOR.move_voltage(0);
-   RB_MOTOR.move_voltage(0);
-   RM_MOTOR.move_voltage(0);
-   RF_MOTOR.move_voltage(0);*/
-    double error = heading;
+/*New turn code with IMU*/
+double error = heading;
+error *= O;
+error /= U;
     if(fabs(error) > 180){
         error -= 360;
     }
-    error *= 3.141592;
-    error /= 360;
-    error *= O;
-    error /= U;
-    error *= driveTicksPerInch;
-    heading = error;
     double prevError = 0;
     double integral = 0;
     double threshold = 20;
-
     while(true){
-        error = heading-(LB_MOTOR.get_position() + LM_MOTOR.get_position() + LF_MOTOR.get_position()-RB_MOTOR.get_position() - RM_MOTOR.get_position() - RF_MOTOR.get_position())/6;
+        error = heading - IMU.get_rotation();
         integral += error;
         if(fabs(error)>threshold){
             integral = 0;
@@ -85,7 +34,7 @@ tareMotors();
 
         prevError = error;
         pros::delay(10);
-        if(abs(error)< 1.5){
+        if(abs(error)< 5){
             break;
         }
         if(fabs(prevError)-fabs(error)<0.05 && fabs(error)<0.4){
@@ -93,6 +42,7 @@ tareMotors();
         }
     }
    stopMotors();
+   pros::lcd::print(1, "degrees after %f", IMU.get_rotation());
 }
 void PIDArm(){
     Rsensor.reset_position();
@@ -308,7 +258,7 @@ void moveBack(double distance, double kP, double kI, double kD) {
 void RunIntake(double target){
    intake.tare_position();
    target = 0;
-   intake.move_absolute(3300,600);
+   intake.move_absolute(3000,600);
    //intake.move_absolute(3200,200);
 }
 void ringInArm(){

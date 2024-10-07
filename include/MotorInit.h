@@ -14,6 +14,8 @@ static pros::Motor RM_MOTOR(15,pros::E_MOTOR_GEAR_BLUE, false);
 static pros::Motor LB_MOTOR(10,pros::E_MOTOR_GEAR_BLUE, true);
 static pros::Motor LF_MOTOR(3,pros::E_MOTOR_GEAR_BLUE, true);
 static pros::Motor LM_MOTOR(7,pros::E_MOTOR_GEAR_BLUE, true);
+
+static pros::IMU IMU(4);
 static pros::ADIDigitalOut clamper ('B'); // extending pulls clamp up
 static pros::Rotation Rsensor(1,false);
 static pros::Motor intake(8, pros::E_MOTOR_GEAR_GREEN, false);

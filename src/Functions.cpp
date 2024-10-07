@@ -9,11 +9,8 @@ void autonSelector() {
    }
 }
 void slowIntake(){
-   if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
-      intake.move_velocity(300);
-   }
-   else if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)){
-      intake.move_velocity(-500);
+   if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)){
+      intake.move_velocity(-300);
    }
 }
 
