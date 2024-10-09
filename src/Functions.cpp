@@ -16,14 +16,21 @@ void slowIntake(){
 
 void driveFunc(double power, double turn) {
    //puts controls into a cubed function to avoid jerk(lurch)
-   double left = power + (turn * 0.6);
-   double right = power -(turn * 0.6);
-   double leftCubed = (400*left*left*left);
-   double rightCubed = (400*right*right*right);
+   double left = power + (turn);
+   double right = power -(turn);
+   double leftCubed = (300*left*left*left);
+   double rightCubed = (300*right*right*right);
    leftCubed /= (127*127*127);
    rightCubed /= (127*127*127);
-   if(abs(rightCubed) >= 500){
-
+   if(power == 0){
+      RB_MOTOR.move_velocity(turn);
+      RM_MOTOR.move_velocity(turn);
+      RF_MOTOR.move_velocity(turn);
+      LF_MOTOR.move_velocity(-turn);
+      LB_MOTOR.move_velocity(-turn);
+      LM_MOTOR.move_velocity(-turn);
+   }
+   if(abs((rightCubed -prevPower)) > 600){
 
    }
    RB_MOTOR.move_velocity(rightCubed);
@@ -77,16 +84,8 @@ void clampRelease() {
   
 }*/
 void moveIntake(){
-   if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)){
-      if(mode3 == true){
+   if(master.get_digital(pros::E_CONTROLLER_DIGITAL_Y)){
          intake.move_velocity(500);
-         mode3 = false;
-      }
-      else{
-         intake.move_velocity(500);
-         intake.set_brake_mode(pros::E_MOTOR_BRAKE_BRAKE);
-         mode3 = true;
-         }
    }
 }
 void moveArm(){

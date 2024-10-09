@@ -12,6 +12,7 @@ void tareMotors() {
 
 void turn(double heading, double Kp, double Kd, double Ki, double O, double U) { //turns a certain amount of degrees
 /*New turn code with IMU*/
+IMU.set_rotation(0);
 double error = heading;
 error *= O;
 error /= U;
@@ -34,7 +35,7 @@ error /= U;
 
         prevError = error;
         pros::delay(10);
-        if(abs(error)< 5){
+        if(abs(error)< 1){
             break;
         }
         if(fabs(prevError)-fabs(error)<0.05 && fabs(error)<0.4){
@@ -109,6 +110,7 @@ void move(double distance, double kP, double kI, double kD) {
    stopMotors();//hit the ideal distance so stop yourself
 }
 void moveBack(double distance, double kP, double kI, double kD) {
+    tareMotors();
    double rightOutput = 0.0;
    double leftOutput = 0.0;
    distance *= driveTicksPerInch;
@@ -256,13 +258,11 @@ void moveBack(double distance, double kP, double kI, double kD) {
 
 
 void RunIntake(double target){
-   intake.tare_position();
-   target = 0;
-   intake.move_absolute(3000,600);
+   intake.move_velocity(600);
    //intake.move_absolute(3200,200);
 }
 void ringInArm(){
-    intake.move_absolute(-3000,600);
+    intake.move_velocity(0);
 }
 
 void stopMotors(){

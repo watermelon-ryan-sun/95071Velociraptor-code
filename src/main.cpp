@@ -2,6 +2,7 @@
 #include "Functions.h"
 #include "PIDControls.h"
 #include "MotorInit.h"
+#include "auton.h"
 /**
  * A callback function for LLEMU's center button.
  *
@@ -47,7 +48,13 @@ void disabled() {}
  * This task will exit when the robot is enabled and autonomous or opcontrol
  * starts.
  */
-void competition_initialize() {}
+void competition_initialize() {
+	Arm.tare_position();
+	intake.tare_position();
+	bool mode = false;
+	bool mode2 = true;
+	bool mode3 = true;
+}
 
 /**
  * Runs the user autonomous code. This function will be started in its own task
@@ -60,7 +67,9 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
+void autonomous() {
+	rightSideAwp();
+}
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -81,18 +90,23 @@ void opcontrol() {
 	bool mode = false;
 	bool mode2 = true;
 	bool mode3 = true;
-	moveBack(40.84,0.1,0.3,0.2);
+	/*moveBack(39.84,0.1,0.3,0.2);
 	pros::delay(50);
 	clampDown();
 	pros::delay(50);
 	RunIntake(212);
 	pros::delay(50);
-	turn(45,0.9,20,0.03,7.7,9);
+	turn(50,0.9,25,0.05,9,9);
 	pros::delay(50);
 	move(35,0.1,0.25,0.2);
-	pros::delay(50);
-	RunIntake(2001021);
+	//pros::delay(1425);
 	pros::lcd::print(0, "Deg %f", IMU.get_rotation());
+	//ringInArm();
+	pros::delay(50);
+	turn(122.5,5,150,0.05,9,9);
+	pros::delay(50);
+	moveBack(36,0.1,0.3,0.2);
+	
 	/*master.print (1,4,"Intake temp : %f", Arm.get_temperature());
 	pros::delay(1000);
 	//flipOut.set_value(1);
@@ -122,9 +136,8 @@ void opcontrol() {
 	//moveBack(24,0.1,0.7, 0.1);
 	//pros::delay(200);
 
-	
+	*/
 while(true){
-	master.print(0,2,"arm heat : %f", Arm.get_temperature());
 		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)){
 			if(mode == true){
 				clamper.set_value(1);
@@ -140,10 +153,9 @@ while(true){
 			}
 		}
 		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
-			intake.move_velocity(350);
-		}
-		else{
-		intake.move_velocity(0);
+			intake.move_velocity(50);
+		}else{
+			intake.move_velocity(0);
 		}
 		driveFunc(master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X));
     	moveIntake();

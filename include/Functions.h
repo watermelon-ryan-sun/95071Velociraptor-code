@@ -6,6 +6,7 @@
 static int amountOfAuton = 0;
 static bool mode2 = true;
 static bool mode3 = true;
+static double prevPower = 0;
 void autonSelector();
 void driveFunc(double power, double turn);
 void clampDown();
