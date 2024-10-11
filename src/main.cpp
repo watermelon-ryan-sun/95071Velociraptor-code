@@ -68,7 +68,28 @@ void competition_initialize() {
  * from where it left off.
  */
 void autonomous() {
-	rightSideAwp();
+	Arm.tare_position();
+	intake.tare_position();
+	bool mode = false;
+	bool mode2 = true;
+	bool mode3 = true;
+	moveBack(40.87,0.2,0.3,0.2);
+	pros::delay(1000);
+	clampDown();
+	pros::delay(50);
+	RunIntake(212);
+	pros::delay(50);
+	turn(60,3,1.0,0.5,1,1);
+	pros::delay(50);
+	move(42,0.1,0.25,0.2);
+	pros::delay(50);
+	turn(-154,3,1.0,0.5,9,9);
+	pros::delay(50);
+	move(51.94,0.2,0.5,0.2);
+	pros::delay(50);
+	turn(116,3,1,0.5,1,1);
+	pros::delay(50);
+	move(48,0.2,0.25,0.2);
 }
 
 /**
@@ -85,58 +106,11 @@ void autonomous() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-	Arm.tare_position();
+Arm.tare_position();
 	intake.tare_position();
 	bool mode = false;
 	bool mode2 = true;
 	bool mode3 = true;
-	/*moveBack(39.84,0.1,0.3,0.2);
-	pros::delay(50);
-	clampDown();
-	pros::delay(50);
-	RunIntake(212);
-	pros::delay(50);
-	turn(50,0.9,25,0.05,9,9);
-	pros::delay(50);
-	move(35,0.1,0.25,0.2);
-	//pros::delay(1425);
-	pros::lcd::print(0, "Deg %f", IMU.get_rotation());
-	//ringInArm();
-	pros::delay(50);
-	turn(122.5,5,150,0.05,9,9);
-	pros::delay(50);
-	moveBack(36,0.1,0.3,0.2);
-	
-	/*master.print (1,4,"Intake temp : %f", Arm.get_temperature());
-	pros::delay(1000);
-	//flipOut.set_value(1);
-	//pros::delay(50);
-	/*ringInArm();
-	pros::delay(1000);
-	PIDArm();
-	pros::delay(50);
-	turn(-135,2,20,0.05,135.5,135);
-	pros::delay(50);
-	move(67.8,0.1,0.3,0.2);
-	pros::delay(50);
-	putDownArm();
-	pros::delay(200);
-	moveBack(24,0.1,0.3,0.1);
-	pros::delay(50);
-	/*turn(90);
-	//pros::delay(50);
-	//move(48,0.1,0.3,0.1);
-
-
-	//move(26,0.1,0.3, 0.2);
-	//pros::delay(200);
-	//pros::delay(200);
-	//RunIntake(100);
-	//turn(45);
-	//moveBack(24,0.1,0.7, 0.1);
-	//pros::delay(200);
-
-	*/
 while(true){
 		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)){
 			if(mode == true){

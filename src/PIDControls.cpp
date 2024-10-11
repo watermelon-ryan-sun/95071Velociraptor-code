@@ -17,6 +17,7 @@ double error = heading;
 error *= O;
 error /= U;
     if(fabs(error) > 180){
+        // TODO: Why it is always -360? What if heading is -190?
         error -= 360;
     }
     double prevError = 0;
@@ -29,13 +30,17 @@ error /= U;
             integral = 0;
         }
 
-        double power = error * Kp + integral * Ki + (error-prevError) * Kd;
+        double power = error * Kp + integral * Ki + (error-prevError) * Kd * driveTicksPerInch;
         moveRight(-1*power);
         moveLeft(power);
 
         prevError = error;
         pros::delay(10);
-        if(abs(error)< 1){
+        // TODO: HX, should this be moved after error is calculated?
+        // My point is that if the angle is less than 1.0, it should not
+        // wait for another turn to break. 
+        // 1.0 is too large as well.
+        if(abs(error) < 1){
             break;
         }
         if(fabs(prevError)-fabs(error)<0.05 && fabs(error)<0.4){
@@ -73,7 +78,6 @@ void move(double distance, double kP, double kI, double kD) {
    double rightOutput = 0.0;
    double leftOutput = 0.0;
    distance *= driveTicksPerInch;
-   distance /= 24.0;
    double target = distance;
    double integral = 0.0;
    double rightMeasured = ((RB_MOTOR.get_position() + RF_MOTOR.get_position() + RM_MOTOR.get_position())/3);
@@ -84,6 +88,8 @@ void move(double distance, double kP, double kI, double kD) {
    double error2 = 0.0;//error between real velocities and fake velocities
    double distanceT = 0.0;//area under the curve
    double distanceT2 = 0.0;//actual position in ticks
+   // TODO: HX comment, the following two lines do not do anything, the value calculated is not assigned back.
+   // They can be removed.
    rightVelocity * rpmToTps;
    leftVelocity * rpmToTps;
    while(target > distanceT2){
@@ -114,7 +120,6 @@ void moveBack(double distance, double kP, double kI, double kD) {
    double rightOutput = 0.0;
    double leftOutput = 0.0;
    distance *= driveTicksPerInch;
-   distance /= 24.0;
    double target = -distance;
    double integral = 0.0;
    double rightMeasured = ((RB_MOTOR.get_position() + RF_MOTOR.get_position() + RM_MOTOR.get_position())/3);
@@ -125,6 +130,8 @@ void moveBack(double distance, double kP, double kI, double kD) {
    double error2 = 0.0;//error between real velocities and fake velocities
    double distanceT = 0.0;//area under the curve
    double distanceT2 = 0.0;//actual position in ticks
+   // TODO: HX comment, the following two lines do not do anything, the value calculated is not assigned back.
+   // They can be removed.
    rightVelocity * rpmToTps;
    leftVelocity * rpmToTps;
    while(target < distanceT2){

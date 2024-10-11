@@ -18,8 +18,8 @@ void driveFunc(double power, double turn) {
    //puts controls into a cubed function to avoid jerk(lurch)
    double left = power + (turn);
    double right = power -(turn);
-   double leftCubed = (300*left*left*left);
-   double rightCubed = (300*right*right*right);
+   double leftCubed = (600*left*left*left);
+   double rightCubed = (600*right*right*right);
    leftCubed /= (127*127*127);
    rightCubed /= (127*127*127);
    if(power == 0){
