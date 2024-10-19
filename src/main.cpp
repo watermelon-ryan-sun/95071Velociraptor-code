@@ -68,28 +68,23 @@ void competition_initialize() {
  * from where it left off.
  */
 void autonomous() {
-	Arm.tare_position();
-	intake.tare_position();
-	bool mode = false;
-	bool mode2 = true;
-	bool mode3 = true;
-	moveBack(40.87,0.2,0.3,0.2);
-	pros::delay(1000);
-	clampDown();
-	pros::delay(50);
-	RunIntake(212);
-	pros::delay(50);
-	turn(60,3,1.0,0.5,1,1);
-	pros::delay(50);
-	move(42,0.1,0.25,0.2);
-	pros::delay(50);
-	turn(-154,3,1.0,0.5,9,9);
-	pros::delay(50);
-	move(51.94,0.2,0.5,0.2);
-	pros::delay(50);
-	turn(116,3,1,0.5,1,1);
-	pros::delay(50);
-	move(48,0.2,0.25,0.2);
+	IMU.set_rotation(0);
+	int selectedAuton = 3;
+	if(selectedAuton == 0){
+			blueLeftAWP();
+	}
+	else if(selectedAuton == 1){
+			blueRightAWP();
+	}
+	else if(selectedAuton == 2){
+			redLeftAWP();
+	}
+	else if(selectedAuton == 3){
+			redRightAWP();
+	}
+	else if(selectedAuton == 4){
+		skills();
+	}
 }
 
 /**

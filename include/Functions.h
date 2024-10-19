@@ -17,4 +17,5 @@ void moveArm();
 void clampTeleOP();
 void sigmaFlipOut185();
 void slowIntake();
+void autonSelector();
 #endif // _PROS_FUNCTIONS_H_

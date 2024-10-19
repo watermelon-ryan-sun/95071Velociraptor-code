@@ -72,14 +72,18 @@ void PIDIntake(){
     intake.tare_position();
 
 }
+void PiBetter(double distance, double kP, double kI, double kD){
 
+}
+void Odomentry(){
+    
+}
 void move(double distance, double kP, double kI, double kD) {
     tareMotors();
    double rightOutput = 0.0;
    double leftOutput = 0.0;
    distance *= driveTicksPerInch;
    double target = distance;
-   double integral = 0.0;
    double rightMeasured = ((RB_MOTOR.get_position() + RF_MOTOR.get_position() + RM_MOTOR.get_position())/3);
    double leftMeasured = ((LB_MOTOR.get_position() + LF_MOTOR.get_position() + LM_MOTOR.get_position())/3);
    double leftVelocity = ((LB_MOTOR.get_actual_velocity() + LF_MOTOR.get_actual_velocity() + LM_MOTOR.get_actual_velocity())/3);
@@ -88,6 +92,7 @@ void move(double distance, double kP, double kI, double kD) {
    double error2 = 0.0;//error between real velocities and fake velocities
    double distanceT = 0.0;//area under the curve
    double distanceT2 = 0.0;//actual position in ticks
+   double integral = 0.0;
    // TODO: HX comment, the following two lines do not do anything, the value calculated is not assigned back.
    // They can be removed.
    rightVelocity * rpmToTps;
@@ -98,10 +103,14 @@ void move(double distance, double kP, double kI, double kD) {
     if(rightVelocity > leftVelocity){
         error = rightVelocity - leftVelocity;
     }
+    integral = target-distanceT;
     distanceT += ((rightVelocity + leftVelocity)/2.0);//better way to calculate distance traveled?
     distanceT2 = (rightMeasured + leftMeasured)/2.0;
-    rightOutput = ((target - distanceT)*kI - (error * kD) - (distanceT-distanceT2)*kP);//missing length left in ticks 
-    leftOutput = ((target - distanceT)*kI + (error * kD) - ((distanceT-distanceT2)*kP));
+    if(integral > 400){
+        integral = 400;
+    }
+    rightOutput = ((integral)*kI - (error * kD) - (distanceT-distanceT2)*kP);//missing length left in ticks 
+    leftOutput = ((integral)*kI + (error * kD) - ((distanceT-distanceT2)*kP));
     pros::lcd::print(0, "before calling moveRight");
     moveRight(rightOutput);
     pros::lcd::print(0, "after calling moveRight");
@@ -137,13 +146,17 @@ void moveBack(double distance, double kP, double kI, double kD) {
    while(target < distanceT2){
     rightVelocity = rightVelocity * 0.01;//how much time passed since last taking of velocity, then multiply by seconds passed to get ticks traveled
     leftVelocity = leftVelocity* 0.01;
+    integral = target-distanceT;
     if(rightVelocity > leftVelocity){
         error = rightVelocity - leftVelocity;
     }
+    if(integral > 400){
+        integral = 400;
+    }
     distanceT -= ((rightVelocity + leftVelocity)/2.0);//better way to calculate distance traveled?
     distanceT2 = -(rightMeasured + leftMeasured)/2.0;
-    rightOutput = ((target - distanceT)*kI - (error * kD) - (distanceT-distanceT2)*kP);//missing length left in ticks 
-    leftOutput = ((target - distanceT)*kI + (error * kD) - ((distanceT-distanceT2)*kP));
+    rightOutput = ((integral)*kI - (error * kD) - (distanceT-distanceT2)*kP);//missing length left in ticks 
+    leftOutput = ((integral)*kI + (error * kD) - ((distanceT-distanceT2)*kP));
     pros::lcd::print(0, "before calling moveRight");
     moveRight(rightOutput);
     pros::lcd::print(0, "after calling moveRight");
@@ -264,9 +277,32 @@ void moveBack(double distance, double kP, double kI, double kD) {
 }*/
 
 
-void RunIntake(double target){
-   intake.move_velocity(600);
-   //intake.move_absolute(3200,200);
+void RunIntake(bool side){
+    double blue = 0;//arbiturary vlaues for now
+    double red = 0;
+    double empty = 200;
+   if(side == true){//blue side means side == true
+    while(IntakeOptical.get_brightness() == empty){//replace red and blue with detected color values, make sure the no ring detetced is right
+        intake.move_velocity(50);
+    }
+    if(IntakeOptical.get_hue() == red){//sputs it out, might want to change later
+        intake.move_velocity(-500);
+    }
+    else if(IntakeOptical.get_hue() == blue){
+        intake.move_velocity(500);
+    }
+   }
+   else{
+    while(IntakeOptical.get_brightness() == empty){//same thing but reverse
+        intake.move_velocity(50);
+    }
+    if(IntakeOptical.get_hue() == blue){
+        intake.move_velocity(-500);
+    }
+    else if(IntakeOptical.get_hue() == red){
+        intake.move_velocity(500);
+    }
+   }
 }
 void ringInArm(){
     intake.move_velocity(0);

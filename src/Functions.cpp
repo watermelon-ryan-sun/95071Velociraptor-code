@@ -101,3 +101,24 @@ void moveArm(){
    }
 
 }
+/*void autonSelector(){
+   int
+    while(master.get_digital_new_press(DIGITAL_A)==0){
+        master.print(2,0,"valve");
+        master.print(0,0,"%s", autons[selectedAuton]);
+        if(master.get_digital_new_press(DIGITAL_RIGHT)){
+            master.clear_line(1);
+            pros::delay(60);
+            selectedAuton = (selectedAuton + 1 + numAutons) % numAutons;
+        } else if (master.get_digital_new_press(DIGITAL_LEFT)){
+            master.clear_line(1);
+            pros::delay(60);
+            selectedAuton = (selectedAuton - 1 + numAutons) % numAutons;
+        }
+        master.print(0,0,"%s", autons[selectedAuton]);
+    }
+    master.rumble("----");
+    pros::delay(100);
+    master.clear();
+    pros::delay(2000);
+}*/
