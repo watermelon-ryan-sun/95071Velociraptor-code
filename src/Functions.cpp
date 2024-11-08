@@ -8,11 +8,6 @@ void autonSelector() {
    while(selected < amountOfAuton){
    }
 }
-void slowIntake(){
-   if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)){
-      intake.move_velocity(-300);
-   }
-}
 
 void driveFunc(double power, double turn) {
    //puts controls into a cubed function to avoid jerk(lurch)
@@ -84,9 +79,60 @@ void clampRelease() {
   
 }*/
 void moveIntake(){
-   if(master.get_digital(pros::E_CONTROLLER_DIGITAL_Y)){
-         intake.move_velocity(500);
+   if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2)){
+      while(master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)){
+         
+         intake.move_velocity(-300);
+      }
+      intake.move_velocity(0);
    }
+   if(speed != 1 && master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1)){
+         intake.move_velocity(500);
+         speed = 1;
+   }
+   else if(speed !=0 && master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1)){
+		intake.move_velocity(0);
+      speed = 0;
+	}
+   else if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)){
+      while(master.get_digital(pros::E_CONTROLLER_DIGITAL_Y)){
+         intake.move_velocity(50);
+      }
+      intake.move_velocity(0);
+   }
+   else if(speed != 0 && master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2)){
+      intake.move_velocity(0);
+      speed = 0;
+   }
+   pros::delay(50);
+}
+void moveIntakeSunny(){
+   if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2)){
+      while(master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)){
+         intake.move_velocity(-300);
+         driveFunc(((master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y)*0.75)+(master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y)*0.25)),(master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X)*0.25)+(master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X)*0.75));
+      }
+      intake.move_velocity(0);
+   }
+   if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R1)){
+         while(master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
+            intake.move_velocity(500);
+            driveFunc(((master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y)*0.75)+(master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y)*0.25)),(master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X)*0.25)+(master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X)*0.75));
+      }
+      intake.move_velocity(0);
+   }
+   else if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)){
+      while(master.get_digital(pros::E_CONTROLLER_DIGITAL_Y)){
+         intake.move_velocity(50);
+         driveFunc(((master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y)*0.75)+(master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y)*0.25)),(master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X)*0.25)+(master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X)*0.75));
+      }
+      intake.move_velocity(0);
+   }
+   else if(speed != 0 && master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2)){
+      intake.move_velocity(0);
+      speed = 0;
+   }
+   pros::delay(50);
 }
 void moveArm(){
    if(master.get_digital(DIGITAL_L1)){
@@ -100,6 +146,16 @@ void moveArm(){
       Arm.set_brake_mode(MOTOR_BRAKE_HOLD);
    }
 
+}
+void clampTeleOP(){
+   if(clampmode == true && master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)){
+      clampDown();
+      clampmode = false;
+   }
+   else if(clampmode == false && master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)){
+      clampRelease();
+      clampmode = true;
+   }
 }
 /*void autonSelector(){
    int

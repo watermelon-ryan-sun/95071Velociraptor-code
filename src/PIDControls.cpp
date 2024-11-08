@@ -1,5 +1,6 @@
 #include "PIDControls.h"
 #include "MotorInit.h"
+#include "Odom.h"
 void tareMotors() {
    LF_MOTOR.tare_position();
    LM_MOTOR.tare_position();
@@ -72,12 +73,7 @@ void PIDIntake(){
     intake.tare_position();
 
 }
-void PiBetter(double distance, double kP, double kI, double kD){
 
-}
-void Odomentry(){
-    
-}
 void move(double distance, double kP, double kI, double kD) {
     tareMotors();
    double rightOutput = 0.0;
@@ -106,8 +102,8 @@ void move(double distance, double kP, double kI, double kD) {
     integral = target-distanceT;
     distanceT += ((rightVelocity + leftVelocity)/2.0);//better way to calculate distance traveled?
     distanceT2 = (rightMeasured + leftMeasured)/2.0;
-    if(integral > 400){
-        integral = 400;
+    if(integral > 300){
+        integral = 300;
     }
     rightOutput = ((integral)*kI - (error * kD) - (distanceT-distanceT2)*kP);//missing length left in ticks 
     leftOutput = ((integral)*kI + (error * kD) - ((distanceT-distanceT2)*kP));
@@ -120,6 +116,7 @@ void move(double distance, double kP, double kI, double kD) {
     leftMeasured = ((LB_MOTOR.get_position() + LF_MOTOR.get_position() + LM_MOTOR.get_position())/3);
     leftVelocity = ((LB_MOTOR.get_actual_velocity() + LF_MOTOR.get_actual_velocity() + LM_MOTOR.get_actual_velocity())/3);
     rightVelocity = ((RB_MOTOR.get_actual_velocity() + RF_MOTOR.get_actual_velocity() + RM_MOTOR.get_actual_velocity())/3);//average right velocity in rpms
+    //OdomCalibration();
     pros::delay(10);
    }
    stopMotors();//hit the ideal distance so stop yourself
@@ -150,8 +147,8 @@ void moveBack(double distance, double kP, double kI, double kD) {
     if(rightVelocity > leftVelocity){
         error = rightVelocity - leftVelocity;
     }
-    if(integral > 400){
-        integral = 400;
+    if(integral > 300){
+        integral = 300;
     }
     distanceT -= ((rightVelocity + leftVelocity)/2.0);//better way to calculate distance traveled?
     distanceT2 = -(rightMeasured + leftMeasured)/2.0;
@@ -277,11 +274,12 @@ void moveBack(double distance, double kP, double kI, double kD) {
 }*/
 
 
-void RunIntake(bool side){
+void RunIntake(double target){
     double blue = 0;//arbiturary vlaues for now
     double red = 0;
     double empty = 200;
-   if(side == true){//blue side means side == true
+    intake.move_velocity(300);
+   /*if(true == true){//blue side means side == true
     while(IntakeOptical.get_brightness() == empty){//replace red and blue with detected color values, make sure the no ring detetced is right
         intake.move_velocity(50);
     }
@@ -302,7 +300,7 @@ void RunIntake(bool side){
     else if(IntakeOptical.get_hue() == red){
         intake.move_velocity(500);
     }
-   }
+   }*/
 }
 void ringInArm(){
     intake.move_velocity(0);

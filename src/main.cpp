@@ -30,6 +30,7 @@ void initialize() {
 	pros::lcd::set_text(1, "Hello PROS User!");
 
 	pros::lcd::register_btn1_cb(on_center_button);
+	speed = 0;
 }
 
 /**
@@ -68,23 +69,11 @@ void competition_initialize() {
  * from where it left off.
  */
 void autonomous() {
-	IMU.set_rotation(0);
-	int selectedAuton = 3;
-	if(selectedAuton == 0){
-			blueLeftAWP();
-	}
-	else if(selectedAuton == 1){
-			blueRightAWP();
-	}
-	else if(selectedAuton == 2){
-			redLeftAWP();
-	}
-	else if(selectedAuton == 3){
-			redRightAWP();
-	}
-	else if(selectedAuton == 4){
+	//RedLeftAWP();
+	IMU.set_heading(0);
 		skills();
-	}
+		pros::lcd::print(3,"raot=d %f", IMU.get_heading());
+
 }
 
 /**
@@ -101,41 +90,44 @@ void autonomous() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
+bool drive = false;//false for sunny, true for Aiden
+clampmode = true;
+while(true){
+if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)){
 Arm.tare_position();
 	intake.tare_position();
 	bool mode = false;
 	bool mode2 = true;
 	bool mode3 = true;
 while(true){
-		if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)){
-			if(mode == true){
-				clamper.set_value(1);
-				mode = false;
-				pros::delay(10);
-				pros::lcd::print(0, "mode = false");
-			}
-			else{
-				clamper.set_value(0);
-				mode = true;
-				pros::delay(10);
-				pros::lcd::print(0, "mode = true");
-			}
-		}
-		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
-			intake.move_velocity(50);
-		}else{
-			intake.move_velocity(0);
-		}
-		driveFunc(master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X));
-    	moveIntake();
+	master.print(0,0,"Left temp %f", LB_MOTOR.get_temperature());
+	master.print(1,0,"Right temp %f", RB_MOTOR.get_temperature());
+	master.print(2,0,"Intake temp %f", intake.get_temperature());
+	driveFunc((master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y)),(master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X)));
+    moveIntake();
+	clampTeleOP();
+	moveArm();
+	sigmaFlipOut185();
+	pros::delay(10);
+   }
+}
+else if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)){
+	Arm.tare_position();
+	intake.tare_position();
+	bool mode = false;
+	bool mode2 = true;
+	bool mode3 = true;
+	while(true){
+		master.print(0,0,"Left temp %f", LB_MOTOR.get_temperature());
+		master.print(1,0,"Right temp %f", RB_MOTOR.get_temperature());
+		master.print(2,0,"Intake temp %f", intake.get_temperature());
+		driveFunc(((master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y)*0.75)+(master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y)*0.25)),(master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X)*0.25)+(master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X)*0.75));
+    	moveIntakeSunny();
+		clampTeleOP();
 		moveArm();
 		sigmaFlipOut185();
-		slowIntake();
 	    pros::delay(10);
    }
-   //clamper.set_value(1);
-   //pros::delay(1000);
-   //turn(90);
-   //PIDArm();  
-   //}*/
+}
+}
 }
