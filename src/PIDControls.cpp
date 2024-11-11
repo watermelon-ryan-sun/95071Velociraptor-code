@@ -13,8 +13,7 @@ void tareMotors() {
 
 void turn(double heading, double Kp, double Kd, double Ki, double O, double U) { //turns a certain amount of degrees
 /*New turn code with IMU*/
-IMU.set_rotation(0);
-double error = heading;
+double error = heading-IMU.get_rotation();
 error *= O;
 error /= U;
     if(fabs(error) > 180){
@@ -41,7 +40,7 @@ error /= U;
         // My point is that if the angle is less than 1.0, it should not
         // wait for another turn to break. 
         // 1.0 is too large as well.
-        if(abs(error) < 1){
+        if(abs(error) < 0.01){
             break;
         }
         if(fabs(prevError)-fabs(error)<0.05 && fabs(error)<0.4){
@@ -96,8 +95,8 @@ void move(double distance, double kP, double kI, double kD) {
    while(target > distanceT2){
     rightVelocity = rightVelocity * 0.01;//how much time passed since last taking of velocity, then multiply by seconds passed to get ticks traveled
     leftVelocity = leftVelocity* 0.01;
-    if(rightVelocity > leftVelocity){
-        error = rightVelocity - leftVelocity;
+    if(IMU.get_heading() > 0){
+        error = IMU.get_heading() * (kD/100);
     }
     integral = target-distanceT;
     distanceT += ((rightVelocity + leftVelocity)/2.0);//better way to calculate distance traveled?
@@ -105,8 +104,8 @@ void move(double distance, double kP, double kI, double kD) {
     if(integral > 300){
         integral = 300;
     }
-    rightOutput = ((integral)*kI - (error * kD) - (distanceT-distanceT2)*kP);//missing length left in ticks 
-    leftOutput = ((integral)*kI + (error * kD) - ((distanceT-distanceT2)*kP));
+    rightOutput = ((integral)*kI + (error) - (distanceT-distanceT2)*kP);//missing length left in ticks 
+    leftOutput = ((integral)*kI - (error) - ((distanceT-distanceT2)*kP));
     pros::lcd::print(0, "before calling moveRight");
     moveRight(rightOutput);
     pros::lcd::print(0, "after calling moveRight");
@@ -144,16 +143,16 @@ void moveBack(double distance, double kP, double kI, double kD) {
     rightVelocity = rightVelocity * 0.01;//how much time passed since last taking of velocity, then multiply by seconds passed to get ticks traveled
     leftVelocity = leftVelocity* 0.01;
     integral = target-distanceT;
-    if(rightVelocity > leftVelocity){
-        error = rightVelocity - leftVelocity;
+   if(IMU.get_heading() > 0){
+        error = IMU.get_heading() * (kD/100);
     }
     if(integral > 300){
         integral = 300;
     }
     distanceT -= ((rightVelocity + leftVelocity)/2.0);//better way to calculate distance traveled?
     distanceT2 = -(rightMeasured + leftMeasured)/2.0;
-    rightOutput = ((integral)*kI - (error * kD) - (distanceT-distanceT2)*kP);//missing length left in ticks 
-    leftOutput = ((integral)*kI + (error * kD) - ((distanceT-distanceT2)*kP));
+    rightOutput = ((integral)*kI - (error) - (distanceT-distanceT2)*kP);//missing length left in ticks 
+    leftOutput = ((integral)*kI + (error) - ((distanceT-distanceT2)*kP));
     pros::lcd::print(0, "before calling moveRight");
     moveRight(rightOutput);
     pros::lcd::print(0, "after calling moveRight");
@@ -275,12 +274,12 @@ void moveBack(double distance, double kP, double kI, double kD) {
 
 
 void RunIntake(double target){
-    double blue = 0;//arbiturary vlaues for now
+    double blue = 0;//arbiturary values for now
     double red = 0;
     double empty = 200;
     intake.move_velocity(300);
    /*if(true == true){//blue side means side == true
-    while(IntakeOptical.get_brightness() == empty){//replace red and blue with detected color values, make sure the no ring detetced is right
+    while(IntakeOptical.get_brightness() == empty){//replace red and blue with detected color values, make sure the no ring detected is right
         intake.move_velocity(50);
     }
     if(IntakeOptical.get_hue() == red){//sputs it out, might want to change later
@@ -329,4 +328,23 @@ void putDownArm(){
     pros::delay(1000);
     Arm.move_velocity(0);
 
+}
+void specialMoving(double distance){
+    distance /= 3;
+    Odometry.set_position(0);
+    while(Odometry.get_position() <= 0){
+
+    }
+}
+void intakeMacro(){//for driving
+    while(true){
+        intake.move_velocity(0);
+        if(Optical.get_proximity() > 0){
+            intake.move_velocity(500);
+        }
+        else{
+            break;
+        }
+    }
+    intake.move_velocity(-500);
 }

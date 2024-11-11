@@ -2,6 +2,16 @@
 #include "MotorInit.h"
 #include "PIDControls.h"
 #include "main.h"
+void intake_fn(){
+   double lastPosition = intake.get_position();
+   while(true){
+      if(intake.get_position() < lastPosition+600){
+		intake.move_velocity(-200);
+		pros::delay(50);
+		intake.move_velocity(600);
+      }
+   }
+}
 void autonSelector() {
    //loops through autonomous options until you pick a desired one. If you loop thru all, it will repeat
    int selected = 1;

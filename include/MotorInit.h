@@ -16,11 +16,12 @@ static pros::Motor LF_MOTOR(3,pros::E_MOTOR_GEAR_BLUE, true);
 static pros::Motor LM_MOTOR(7,pros::E_MOTOR_GEAR_BLUE, true);
 
 static pros::IMU IMU(4);
+static pros::Optical Optical(20);
 static pros::ADIDigitalOut clamper ('A'); // extending pulls clamp up
 static pros::Rotation Rsensor(1,false);
 static pros::Motor intake(8, pros::E_MOTOR_GEAR_GREEN, false);
 static pros::Motor Arm(16, pros::E_MOTOR_GEAR_RED, false);
 static pros::ADIDigitalOut flipOut('B');//flipout for arm, 
-static pros::Rotation Odom();
+static pros::Rotation Odometry(5);
 
 #endif // _PROS_MORTORINIT_H_

@@ -69,6 +69,7 @@ void competition_initialize() {
  * from where it left off.
  */
 void autonomous() {
+	pros::Task position_task(intake_fn, (void *)"PROS", TASK_PRIORITY_MAX, TASK_STACK_DEPTH_DEFAULT, "Print X and Y Task");
 	//RedLeftAWP();
 	IMU.set_heading(0);
 		skills();
@@ -90,7 +91,7 @@ void autonomous() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-bool drive = false;//false for sunny, true for Aiden
+bool drive = false;//false for sunny, true for Aiden, fix when you find out how to make two programs
 clampmode = true;
 while(true){
 if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)){
