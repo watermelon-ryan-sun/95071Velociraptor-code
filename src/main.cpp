@@ -69,7 +69,7 @@ void competition_initialize() {
  * from where it left off.
  */
 void autonomous() {
-	pros::Task position_task(intake_fn, (void *)"PROS", TASK_PRIORITY_MAX, TASK_STACK_DEPTH_DEFAULT, "Print X and Y Task");
+	//pros::Task position_task(intake_fn, (void *)"PROS", TASK_PRIORITY_MAX, TASK_STACK_DEPTH_DEFAULT, "Print X and Y Task");
 	//RedLeftAWP();
 	IMU.set_heading(0);
 		skills();

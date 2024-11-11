@@ -122,6 +122,7 @@ void move(double distance, double kP, double kI, double kD) {
 }
 void moveBack(double distance, double kP, double kI, double kD) {
     tareMotors();
+    double targetHeading = IMU.get_rotation();
    double rightOutput = 0.0;
    double leftOutput = 0.0;
    distance *= driveTicksPerInch;
@@ -143,8 +144,8 @@ void moveBack(double distance, double kP, double kI, double kD) {
     rightVelocity = rightVelocity * 0.01;//how much time passed since last taking of velocity, then multiply by seconds passed to get ticks traveled
     leftVelocity = leftVelocity* 0.01;
     integral = target-distanceT;
-   if(IMU.get_heading() > 0){
-        error = IMU.get_heading() * (kD/100);
+   if(IMU.get_heading() != targetHeading){
+        error = IMU.get_heading() * (kD/60);
     }
     if(integral > 300){
         integral = 300;
