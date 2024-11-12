@@ -96,7 +96,7 @@ void move(double distance, double kP, double kI, double kD) {
     rightVelocity = rightVelocity * 0.01;//how much time passed since last taking of velocity, then multiply by seconds passed to get ticks traveled
     leftVelocity = leftVelocity* 0.01;
     if(IMU.get_heading() > 0){
-        error = IMU.get_heading() * (kD/100);
+        error = IMU.get_heading() * (kD/70);
     }
     integral = target-distanceT;
     distanceT += ((rightVelocity + leftVelocity)/2.0);//better way to calculate distance traveled?
@@ -145,7 +145,7 @@ void moveBack(double distance, double kP, double kI, double kD) {
     leftVelocity = leftVelocity* 0.01;
     integral = target-distanceT;
    if(IMU.get_heading() != targetHeading){
-        error = IMU.get_heading() * (kD/60);
+        error = IMU.get_heading() * (kD/70);
     }
     if(integral > 300){
         integral = 300;
