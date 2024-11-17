@@ -1,7 +1,5 @@
 #ifndef _PROS_FUNCTIONS_H_
 #define _PROS_FUNCTIONS_H_
-
-
 //global variables
 static int amountOfAuton = 0;
 static bool mode2 = true;
@@ -9,7 +7,7 @@ static bool mode3 = true;
 static double prevPower = 0;
 static int speed = 0;
 static bool clampmode = true;
-void autonSelector();
+static int autonSelected = 0;
 void driveFunc(double power, double turn);
 void clampDown();
 void clampRelease();

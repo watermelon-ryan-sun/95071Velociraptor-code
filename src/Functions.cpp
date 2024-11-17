@@ -12,12 +12,6 @@ void intake_fn(){
       }
    }
 }
-void autonSelector() {
-   //loops through autonomous options until you pick a desired one. If you loop thru all, it will repeat
-   int selected = 1;
-   while(selected < amountOfAuton){
-   }
-}
 
 void driveFunc(double power, double turn) {
    //puts controls into a cubed function to avoid jerk(lurch)
@@ -167,24 +161,25 @@ void clampTeleOP(){
       clampmode = true;
    }
 }
-/*void autonSelector(){
-   int
+void autonSelector(){
+   int numAutons = 5;
+   std::string autons[5]={"Red Left  ","Blue Left ","Red Right ", "Blue Right", "skills    "};
     while(master.get_digital_new_press(DIGITAL_A)==0){
         master.print(2,0,"valve");
-        master.print(0,0,"%s", autons[selectedAuton]);
+        master.print(0,0,"%s", autons[autonSelected]);
         if(master.get_digital_new_press(DIGITAL_RIGHT)){
-            master.clear_line(1);
+            master.clear();
             pros::delay(60);
-            selectedAuton = (selectedAuton + 1 + numAutons) % numAutons;
+            autonSelected = (autonSelected + 1 + numAutons) % numAutons;
         } else if (master.get_digital_new_press(DIGITAL_LEFT)){
-            master.clear_line(1);
+            master.clear();
             pros::delay(60);
-            selectedAuton = (selectedAuton - 1 + numAutons) % numAutons;
+            autonSelected = (autonSelected - 1 + numAutons) % numAutons;
         }
-        master.print(0,0,"%s", autons[selectedAuton]);
+        master.print(0,0,"%s", autons[autonSelected]);
     }
     master.rumble("----");
     pros::delay(100);
     master.clear();
     pros::delay(2000);
-}*/
+}

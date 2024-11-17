@@ -28,9 +28,8 @@ void on_center_button() {
 void initialize() {
 	pros::lcd::initialize();
 	pros::lcd::set_text(1, "Hello PROS User!");
-
-	pros::lcd::register_btn1_cb(on_center_button);
-	speed = 0;
+	pros::lcd::register_btn1_cb(on_center_button);	
+	//autonSelector();
 }
 
 /**
@@ -55,6 +54,7 @@ void competition_initialize() {
 	bool mode = false;
 	bool mode2 = true;
 	bool mode3 = true;
+
 }
 
 /**
@@ -70,11 +70,24 @@ void competition_initialize() {
  */
 void autonomous() {
 	//pros::Task position_task(intake_fn, (void *)"PROS", TASK_PRIORITY_MAX, TASK_STACK_DEPTH_DEFAULT, "Print X and Y Task");
-	//RedLeftAWP();
-	IMU.set_heading(0);
-		skills();
-		pros::lcd::print(3,"raot=d %f", IMU.get_heading());
-
+	/*switch(autonSelected){
+		case 0:
+			RedLeftAWP();
+			break;
+		case 1: 
+			blueLeftAWP();
+			break;
+		case 2: 
+			redRightAWP();
+			break;
+		case 3: 
+			blueRightAWP();
+			break;
+		case 4:
+			skills();
+			break;
+}*/
+blueRightAWP();
 }
 
 /**
@@ -93,27 +106,7 @@ void autonomous() {
 void opcontrol() {
 bool drive = false;//false for sunny, true for Aiden, fix when you find out how to make two programs
 clampmode = true;
-while(true){
-if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X)){
 Arm.tare_position();
-	intake.tare_position();
-	bool mode = false;
-	bool mode2 = true;
-	bool mode3 = true;
-while(true){
-	master.print(0,0,"Left temp %f", LB_MOTOR.get_temperature());
-	master.print(1,0,"Right temp %f", RB_MOTOR.get_temperature());
-	master.print(2,0,"Intake temp %f", intake.get_temperature());
-	driveFunc((master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y)),(master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X)));
-    moveIntake();
-	clampTeleOP();
-	moveArm();
-	sigmaFlipOut185();
-	pros::delay(10);
-   }
-}
-else if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)){
-	Arm.tare_position();
 	intake.tare_position();
 	bool mode = false;
 	bool mode2 = true;
@@ -129,6 +122,4 @@ else if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)){
 		sigmaFlipOut185();
 	    pros::delay(10);
    }
-}
-}
 }
