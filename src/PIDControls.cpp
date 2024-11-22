@@ -88,6 +88,7 @@ void move(double distance, double kP, double kI, double kD) {
    double distanceT = 0.0;//area under the curve
    double distanceT2 = 0.0;//actual position in ticks
    double integral = 0.0;
+   double targetHeading = IMU.get_rotation();
    // TODO: HX comment, the following two lines do not do anything, the value calculated is not assigned back.
    // They can be removed.
    rightVelocity * rpmToTps;
@@ -95,7 +96,7 @@ void move(double distance, double kP, double kI, double kD) {
    while(target > distanceT2){
     rightVelocity = rightVelocity * 0.01;//how much time passed since last taking of velocity, then multiply by seconds passed to get ticks traveled
     leftVelocity = leftVelocity* 0.01;
-    if(IMU.get_heading() > 0){
+    if(abs(IMU.get_heading()) != targetHeading){
         error = IMU.get_heading() * (kD/70);
     }
     integral = target-distanceT;
@@ -144,7 +145,7 @@ void moveBack(double distance, double kP, double kI, double kD) {
     rightVelocity = rightVelocity * 0.01;//how much time passed since last taking of velocity, then multiply by seconds passed to get ticks traveled
     leftVelocity = leftVelocity* 0.01;
     integral = target-distanceT;
-   if(IMU.get_heading() != targetHeading){
+   if(abs(IMU.get_heading()) != targetHeading){
         error = IMU.get_heading() * (kD/70);
     }
     if(integral > 300){

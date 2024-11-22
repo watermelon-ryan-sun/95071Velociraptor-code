@@ -75,13 +75,15 @@ void clampRelease() {
 
 
 
-/*void driveIntake() {
-   intakeRunner.move_velocity(140);//runs the intake at the desired volociy
-   double start = 0.0;
-   double oneRotation = 0.0;
-   Intake.set_position(start - (Intake.get_position()%oneRotation));
-  
-}*/
+void driveIntake() {
+   intake.move_velocity(100);
+   while(DSensor.get() <= 120){
+      intake.move_velocity(-100);
+      pros::delay(2000);
+      pros::lcd::print(0, "Sensed");
+   }
+   intake.move_velocity(100);
+}
 void moveIntake(){
    if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2)){
       while(master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)){

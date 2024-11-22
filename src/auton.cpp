@@ -127,20 +127,21 @@ void blueSRightAWP(){
 	move(45,0.2,0.5,0.2);
 }
 void skills(){
-	IMU.set_rotation(0);
+	turn(180,2.5,0.2,0.1,1,1);
+	/*IMU.set_rotation(0);
 	pros::lcd::print(0,"IMU degrees at the start %f",IMU.get_rotation());
     intake.move_velocity(450);
     pros::delay(500);
 	move(3,0.2,0.3,0.2);
 	pros::delay(50);
-    turn(-118,2.5,0.2,0.001,1,1);
+    turn(-118,2.5,0.15,0.01,1,1);
 	pros::lcd::print(1,"rotated after first turn %f", IMU.get_rotation());
     pros::delay(50);
-    moveBack(40,0.2,0.3,0.2);
+    moveBack(44,0.2,0.3,0.2);
 	pros::delay(450);
 	clampDown();
 	pros::delay(50);
-	turn(0,2.5,0.2,0.001,1,1);
+	turn(0,2.5,0.15,0.01,1,1);
 	pros::lcd::print(2,"IMU degrees after %f",IMU.get_rotation());
 	pros::delay(100);
 	move(36,0.2,0.3,0.2);
@@ -151,13 +152,13 @@ void skills(){
 		intake.move_velocity(600);
 	}
 	pros::delay(100);
-	turn(90,2.5,0.2,0.001,1,1);
+	turn(90,2.5,0.1,0.01,1,1);
 	pros::lcd::print(0,"IMU degrees %f",IMU.get_heading());
 	pros::delay(100);
 	move(44,0.2,0.3,0.2);
 	lastPosition = intake.get_position(); 
 	pros::delay(100);
-	turn(25,2.5,0.2,0.001,1,1);
+	turn(25,2.5,0.2,0.01,1,1);
 	if(intake.get_position() < lastPosition+100){
 		intake.move_velocity(-50);
 		pros::delay(50);
@@ -180,7 +181,7 @@ void skills(){
 		intake.move_velocity(600);
 	}
 	pros::delay(50);
-	turn(177,2.5,0.2,0.001,1,1);
+	turn(177,2.5,0.2,0.01,1,1);
 	pros::delay(100);
 	move(55,0.2,0.3,0.2);
 	if(intake.get_position() < lastPosition+600){
@@ -211,7 +212,7 @@ void skills(){
 	pros::delay(50);
 	turn(90,2.5,0.2,0.01,1,1);
 	pros::delay(50);
-	moveBack(77,0.2,0.3,0.2);
+	moveBack(78,0.1,0.7,0.5);
 	pros::delay(600);
 	clampDown();
 	pros::delay(50);
@@ -233,7 +234,7 @@ void skills(){
 	pros::delay(100);
 	moveBack(33,0.2,0.3,0.2);
 	pros::delay(50);
-	turn(-177,2.5,0.2,0.001,1,1);
+	turn(-177,2.5,0.2,0.01,1,1);
 	pros::delay(100);
 	move(55,0.2,0.3,0.2);
 	pros::delay(500);
@@ -277,5 +278,5 @@ void skills(){
 
 
 
-
+*/
 }

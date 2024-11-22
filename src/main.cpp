@@ -3,6 +3,8 @@
 #include "PIDControls.h"
 #include "MotorInit.h"
 #include "auton.h"
+#include "Odom.h"
+
 /**
  * A callback function for LLEMU's center button.
  *
@@ -30,6 +32,7 @@ void initialize() {
 	pros::lcd::set_text(1, "Hello PROS User!");
 	pros::lcd::register_btn1_cb(on_center_button);	
 	//autonSelector();
+	//pros::Task OdomCalib(recordPosition);
 }
 
 /**
@@ -54,7 +57,7 @@ void competition_initialize() {
 	bool mode = false;
 	bool mode2 = true;
 	bool mode3 = true;
-
+	autonSelector();
 }
 
 /**
@@ -87,7 +90,7 @@ void autonomous() {
 			skills();
 			break;
 }*/
-blueRightAWP();
+//skills();
 }
 
 /**
@@ -104,14 +107,17 @@ blueRightAWP();
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-bool drive = false;//false for sunny, true for Aiden, fix when you find out how to make two programs
+bool drive = false;
 clampmode = true;
 Arm.tare_position();
 	intake.tare_position();
 	bool mode = false;
 	bool mode2 = true;
 	bool mode3 = true;
-	while(true){
+		recordPosition();
+		pros::lcd::print(5,"speical %d", XPos);
+		//driveIntake();
+		/*pros::lcd::print(3,"important %f", XPos);
 		master.print(0,0,"Left temp %f", LB_MOTOR.get_temperature());
 		master.print(1,0,"Right temp %f", RB_MOTOR.get_temperature());
 		master.print(2,0,"Intake temp %f", intake.get_temperature());
@@ -120,6 +126,5 @@ Arm.tare_position();
 		clampTeleOP();
 		moveArm();
 		sigmaFlipOut185();
-	    pros::delay(10);
-   }
+	    pros::delay(10);*/
 }

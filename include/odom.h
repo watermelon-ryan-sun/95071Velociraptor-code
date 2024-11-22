@@ -1,4 +1,8 @@
-static double XPos = 0;
-static double YPos = 0;
+#ifndef _PROS_ODOM_H_
+#define _PROS_ODOM_H_
+static int XPos = 0.0;
+static int YPos = 0.0;
 static double lastTheta = 0;
-double OdomCalibration();
+void recordPosition();
+void testThread();
+#endif // _PROS_ODOM_H_
