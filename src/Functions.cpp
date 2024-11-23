@@ -76,13 +76,21 @@ void clampRelease() {
 
 
 void driveIntake() {
-   intake.move_velocity(100);
-   while(DSensor.get() <= 120){
-      intake.move_velocity(-100);
-      pros::delay(2000);
+   intake.move_velocity(130);
+   if(DSensor.get() <= 148){
+      intake.move_velocity(-50);
       pros::lcd::print(0, "Sensed");
+      pros::delay(700);
    }
-   intake.move_velocity(100);
+}
+void driveIntakeUltimate() {
+   intake.move_velocity(130);
+   /*while(Optical.getcolor != green)
+   if(DSensor.get() <= 145){
+      intake.move_velocity(-50);
+      pros::lcd::print(0, "Sensed");
+      pros::delay(700);
+   }*/
 }
 void moveIntake(){
    if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2)){

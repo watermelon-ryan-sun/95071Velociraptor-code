@@ -3,10 +3,16 @@
 #include "odom.h"
 #include "PIDControls.h"
 
+double XPos;
+double YPos;
 void recordPosition(){//repeatdly call
-        XPos ++;//(cos(currenttheta) * (Odometry.get_position()*(3.1415/180)));
-        YPos ++;//(sin(currenttheta) * (Odometry.get_position()*(3.1415/180)));
+while(true){
+    double currenttheta = IMU.get_rotation();
+        XPos +=(cos(currenttheta) * (Odometry.get_position()*(3.1415/180)));
+        YPos += (sin(currenttheta) * (Odometry.get_position()*(3.1415/180)));
+        pros::lcd::print(0,"threading%f", XPos);
         pros::delay(500);
+}
 }
 void movePosition(double targetX, double targetY, bool faceBack){
     double targetTheta = tan((targetY-YPos)/(targetX-XPos));
