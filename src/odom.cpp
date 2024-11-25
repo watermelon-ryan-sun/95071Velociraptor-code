@@ -3,15 +3,26 @@
 #include "odom.h"
 #include "PIDControls.h"
 
-double XPos;
-double YPos;
+volatile double XPos;
+volatile double YPos;
+double previous;
+double moved = ((RM_MOTOR.get_position() + LM_MOTOR.get_position())/2) * driveTicksPerInch;
 void recordPosition(){//repeatdly call
+IMU.set_rotation(0);
 while(true){
+    moved = ((RM_MOTOR.get_position() + LM_MOTOR.get_position())/2) * driveTicksPerInch-moved;
     double currenttheta = IMU.get_rotation();
-        XPos +=(cos(currenttheta) * (Odometry.get_position()*(3.1415/180)));
-        YPos += (sin(currenttheta) * (Odometry.get_position()*(3.1415/180)));
-        pros::lcd::print(0,"threading%f", XPos);
-        pros::delay(500);
+    double temp = cos(currenttheta) * moved;
+     if (temp == std::nan("")) {
+        //pros::lcd::print(0,"threading%f, %f",cos(currenttheta), moved);
+        pros::delay(5000);
+        continue;
+    }
+       XPos +=temp;
+       YPos += (sin(currenttheta) * moved);
+       previous = moved;
+        pros::lcd::print(0,"threading1%f, %f",temp, XPos);
+        pros::delay(5000);
 }
 }
 void movePosition(double targetX, double targetY, bool faceBack){

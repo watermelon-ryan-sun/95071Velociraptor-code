@@ -62,6 +62,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+extern volatile double XPos;
+extern volatile double YPos;
 void autonomous(void);
 void initialize(void);
 void disabled(void);

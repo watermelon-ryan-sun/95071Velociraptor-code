@@ -12,9 +12,6 @@
  * "I was pressed!" and nothing.
  */
 
-extern double XPos;
-extern double YPos;
-
 void on_center_button() {
 	static bool pressed = false;
 	pressed = !pressed;
@@ -97,7 +94,7 @@ void autonomous() {
 			break;
 }*/
 //skills();
-specialOdomSkills();
+//specialOdomSkills();
 }
 
 /**
