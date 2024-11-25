@@ -15,7 +15,7 @@ while(true){
 }
 }
 void movePosition(double targetX, double targetY, bool faceBack){
-    double targetTheta = tan((targetY-YPos)/(targetX-XPos));
+    double targetTheta = atan((targetY-YPos)/(targetX-XPos));
     if(faceBack == true){
         turn(targetTheta-180, 0.25,0.2,0.1,1,1);
         moveBack(sqrt(((targetX-XPos)*(targetX-XPos)) - ((targetY-YPos)*(targetY-YPos))),0.2,0.3,0.2);

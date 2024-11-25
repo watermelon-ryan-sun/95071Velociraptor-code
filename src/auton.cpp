@@ -2,6 +2,7 @@
 #include "Functions.h"
 #include "main.h"
 #include "MotorInit.h"
+#include "odom.h"
 void blueRightAWP(){
 	IMU.set_rotation(0);
     Arm.tare_position();
@@ -127,8 +128,7 @@ void blueSRightAWP(){
 	move(45,0.2,0.5,0.2);
 }
 void skills(){
-	turn(180,2.5,0.2,0.1,1,1);
-	/*IMU.set_rotation(0);
+	IMU.set_rotation(0);
 	pros::lcd::print(0,"IMU degrees at the start %f",IMU.get_rotation());
     intake.move_velocity(450);
     pros::delay(500);
@@ -210,9 +210,9 @@ void skills(){
 	pros::delay(50);
 	move(10,0.2,0.3,0.2);
 	pros::delay(50);
-	turn(90,2.5,0.2,0.01,1,1);
+	turn(89,2.5,0.2,0.01,1,1);
 	pros::delay(50);
-	moveBack(78,0.1,0.7,0.5);
+	moveBack(120,0.1,0.1,0);
 	pros::delay(600);
 	clampDown();
 	pros::delay(50);
@@ -275,8 +275,7 @@ void skills(){
 	pros::delay(50);
 	clampRelease();
 	move(10,0.2,0.3,0.2);
-
-
-
-*/
+}
+void specialOdomSkills(){
+	movePosition(24,24,true);
 }

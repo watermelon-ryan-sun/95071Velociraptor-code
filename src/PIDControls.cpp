@@ -97,7 +97,7 @@ void move(double distance, double kP, double kI, double kD) {
     rightVelocity = rightVelocity * 0.01;//how much time passed since last taking of velocity, then multiply by seconds passed to get ticks traveled
     leftVelocity = leftVelocity* 0.01;
     if(abs(IMU.get_heading()) != targetHeading){
-        error = IMU.get_heading() * (kD/70);
+        error = IMU.get_heading() * (kD/40);
     }
     integral = target-distanceT;
     distanceT += ((rightVelocity + leftVelocity)/2.0);//better way to calculate distance traveled?
@@ -105,8 +105,8 @@ void move(double distance, double kP, double kI, double kD) {
     if(integral > 300){
         integral = 300;
     }
-    rightOutput = ((integral)*kI + (error) - (distanceT-distanceT2)*kP);//missing length left in ticks 
-    leftOutput = ((integral)*kI - (error) - ((distanceT-distanceT2)*kP));
+    rightOutput = ((integral)*kI - (error) - (distanceT-distanceT2)*kP);//missing length left in ticks 
+    leftOutput = ((integral)*kI + (error) - ((distanceT-distanceT2)*kP));
     pros::lcd::print(0, "before calling moveRight");
     moveRight(rightOutput);
     pros::lcd::print(0, "after calling moveRight");
@@ -153,8 +153,8 @@ void moveBack(double distance, double kP, double kI, double kD) {
     }
     distanceT -= ((rightVelocity + leftVelocity)/2.0);//better way to calculate distance traveled?
     distanceT2 = -(rightMeasured + leftMeasured)/2.0;
-    rightOutput = ((integral)*kI - (error) - (distanceT-distanceT2)*kP);//missing length left in ticks 
-    leftOutput = ((integral)*kI + (error) - ((distanceT-distanceT2)*kP));
+    rightOutput = ((integral)*kI + (error) - (distanceT-distanceT2)*kP);//missing length left in ticks 
+    leftOutput = ((integral)*kI - (error) - ((distanceT-distanceT2)*kP));
     pros::lcd::print(0, "before calling moveRight");
     moveRight(rightOutput);
     pros::lcd::print(0, "after calling moveRight");
