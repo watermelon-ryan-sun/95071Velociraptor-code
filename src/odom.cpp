@@ -28,19 +28,20 @@ while(true){
 void movePosition(double targetX, double targetY, bool faceBack){
     double targetTheta = 180 * atan((targetY-YPos)/(targetX-XPos))/M_PI;
     if(faceBack == true){
-        if(abs(targetX - XPos) < 0.1 && abs(targetY - YPos)){
-            break;
+        while(abs(targetX - XPos) < 0.1 && abs(targetY - YPos) < 0.1){
+            turn(targetTheta-180, 2.5,0.2,0.1,1,1);
+            pros::delay(100);
+            moveBack(sqrt(((targetX-XPos)*(targetX-XPos)) + ((targetY-YPos)*(targetY-YPos))),0.2,0.3,0.2);
+            pros::delay(100);
         }
-        turn(targetTheta-180, 2.5,0.2,0.1,1,1);
-        pros::delay(50);
-        moveBack(sqrt(((targetX-XPos)*(targetX-XPos)) + ((targetY-YPos)*(targetY-YPos))),0.2,0.3,0.2);
-        pros::delay(50);
-        movePosition(targetX,targetY,faceBack);
     }
     else{
-        turn(targetTheta, 2.5,0.2,0.1,1,1);
-        move(sqrt(((targetX-XPos)*(targetX-XPos)) + ((targetY-YPos)*(targetY-YPos))),0.2,0.3,0.2);
-        movePosition(targetX, targetY, faceBack);
+        while(abs(targetX - XPos) < 0.1 && abs(targetY - YPos) < 0.1){
+           turn(targetTheta, 2.5,0.2,0.1,1,1);
+           pros::delay(100);
+           move(sqrt(((targetX-XPos)*(targetX-XPos)) + ((targetY-YPos)*(targetY-YPos))),0.2,0.3,0.2);
+           pros::delay(100);
+        }
     }
 }
 void testThread(){
