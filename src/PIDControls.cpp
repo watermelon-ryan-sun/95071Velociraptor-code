@@ -9,8 +9,6 @@ void tareMotors() {
    RM_MOTOR.tare_position();
    RF_MOTOR.tare_position();
 }
-
-
 void turn(double heading, double Kp, double Kd, double Ki, double O, double U) { //turns a certain amount of degrees
 /*New turn code with IMU*/
 double error = heading-IMU.get_rotation();
@@ -329,14 +327,6 @@ void putDownArm(){
     Arm.move_velocity(-300);
     pros::delay(1000);
     Arm.move_velocity(0);
-
-}
-void specialMoving(double distance){
-    distance /= 3;
-    Odometry.set_position(0);
-    while(Odometry.get_position() <= 0){
-
-    }
 }
 void intakeMacro(){//for driving
     while(true){
