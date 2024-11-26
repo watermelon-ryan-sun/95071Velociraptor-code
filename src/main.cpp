@@ -94,7 +94,7 @@ void autonomous() {
 			break;
 }*/
 //skills();
-//specialOdomSkills();
+specialOdomSkills();
 }
 
 /**
