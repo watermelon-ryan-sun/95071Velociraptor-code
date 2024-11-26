@@ -8,6 +8,9 @@ static const double rotationInit = 0.0;
 static const double radiusCenter = 10; //For calculating the arc length
 static const double rpmToTps = 6;
 
+// TODO: to be updated.
+static const double verticalOffset1 = 7.5;
+static const double verticalOffset2 = verticalOffset1;
 
 void tareMotors();
 void turn(double heading, double Kp, double Kd, double Ki,double O, double U);
