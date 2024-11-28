@@ -277,12 +277,8 @@ void skills(){
 	move(10,0.2,0.3,0.2);
 }
 void specialOdomSkills(){
-	XPos = 0;
+	XPos = 12;
 	YPos = 0;
-	//IMU.set_rotation(-90);
-	movePosition(24,12,true);
-	pros::delay(50);
-	movePosition(24,36,false);
-	pros::delay(50);
-	movePosition(48,36,false);
+	move_straight(20);
+	//movePosition(48,0,false);
 }

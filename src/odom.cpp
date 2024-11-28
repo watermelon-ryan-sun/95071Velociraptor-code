@@ -9,6 +9,8 @@ double previous;
 double moved = ((RM_MOTOR.get_position() + LM_MOTOR.get_position())/2) / driveTicksPerInch;
 void recordPosition(){//repeatdly call
     IMU.set_rotation(0);
+    RM_MOTOR.tare_position();
+    LM_MOTOR.tare_position();
     while(true){
         // TODO: Here, we do not track Left and Right travelling and do not calculate the drift.
         // It uses (L + R)/2 to simulate the tank tracking center's move.
@@ -26,9 +28,10 @@ void recordPosition(){//repeatdly call
         }
         XPos += xMoved;
         YPos += yMoved;
-        previous = moved;
-        pros::lcd::print(0,"threading1%f, %f", XPos, YPos);
+        previous += moved;
+        //pros::lcd::print(0,"threading1%f, %f", XPos, YPos);
         pros::delay(50);
+        master.print(2,3,"important %f", XPos);
     }
 }
 
@@ -78,7 +81,7 @@ void movePosition(double targetX, double targetY, bool faceBack){
     double targetDistance = 0.0;
 
     if(faceBack == true){
-        while(abs(targetX - XPos) < 0.1 && abs(targetY - YPos) < 0.1){
+        //while(abs(targetX - XPos) > 0.1 && abs(targetY - YPos) > 0.1){
             targetTheta = 180 * atan((targetY-YPos)/(targetX-XPos))/M_PI;
             targetDistance = sqrt(((targetX-XPos)*(targetX-XPos)) + ((targetY-YPos)*(targetY-YPos)));
             pros::lcd::print(0,"target Theta/dist %f, %f", targetTheta, targetDistance);
@@ -86,19 +89,21 @@ void movePosition(double targetX, double targetY, bool faceBack){
             pros::delay(100);
             moveBack(targetDistance,0.2,0.3,0.2);
             pros::delay(100);
-        }
+        //}
     }
     else{
-        while(abs(targetX - XPos) < 0.1 && abs(targetY - YPos) < 0.1){
+        pros::lcd::print(1,"target Theta/dist %f, %f", targetX, YPos);
+        pros::lcd::print(0,"target Theta/dist1 %f, %f", targetY, XPos);
+       //while(abs(targetX - YPos) > 0.1 || abs(targetY - XPos) > 0.1){
             targetTheta = 180 * atan((targetY-YPos)/(targetX-XPos))/M_PI;
             targetDistance = sqrt(((targetX-XPos)*(targetX-XPos)) + ((targetY-YPos)*(targetY-YPos)));
             pros::lcd::print(0,"target Theta/dist %f, %f", targetTheta, targetDistance);
-
             turn(targetTheta, 2.5, 0.2, 0.1, 1,1);
             pros::delay(100);
             move(targetDistance, 0.2, 0.3, 0.2);
             pros::delay(100);
-        }
+            master.print(2,3,"important %f", XPos);
+        //}
     }
 }
 void testThread(){
