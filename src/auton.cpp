@@ -277,8 +277,10 @@ void skills(){
 	move(10,0.2,0.3,0.2);
 }
 void specialOdomSkills(){
-	XPos = 12;
-	YPos = 0;
-	move_straight(20);
-	//movePosition(48,0,false);
+	XPos = 0;
+	YPos = 12;
+	movePosition(0,36,false);
+
+	pros::lcd::print(0, "movedTicks %f", RM_MOTOR.get_position());
+
 }

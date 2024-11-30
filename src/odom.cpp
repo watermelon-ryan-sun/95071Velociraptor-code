@@ -3,35 +3,41 @@
 #include "odom.h"
 #include "PIDControls.h"
 
-volatile double XPos;
-volatile double YPos;
-double previous;
-double moved = ((RM_MOTOR.get_position() + LM_MOTOR.get_position())/2) / driveTicksPerInch;
+volatile double XPos = 0;
+volatile double YPos = 0;
+double moved = 0;
+double RM_moved = 0, LM_moved = 0;
+
 void recordPosition(){//repeatdly call
+    double RM_position = 0, LM_position = 0;
     IMU.set_rotation(0);
     RM_MOTOR.tare_position();
     LM_MOTOR.tare_position();
     while(true){
         // TODO: Here, we do not track Left and Right travelling and do not calculate the drift.
         // It uses (L + R)/2 to simulate the tank tracking center's move.
-        moved = (((RM_MOTOR.get_position() + LM_MOTOR.get_position())/2) / driveTicksPerInch) - previous;
-
-
+        pros::delay(5000);        
+        RM_position = RM_MOTOR.get_position();
+        LM_position = LM_MOTOR.get_position();
+        moved = (((RM_position - RM_moved) + (LM_position - LM_moved)/2)) / driveTicksPerInch;
+        RM_moved = RM_position;
+        LM_moved = LM_position;
+        //pros::lcd::print(0,"moved%f, %f, %f", moved, RM_position, LM_position);
         double currenttheta = IMU.get_rotation();
-        double xMoved = sin(currenttheta) * moved;
-        double yMoved = cos(currenttheta) * moved;
+        currenttheta -= 90;
+        double xMoved = cos(currenttheta) * moved;
+        double yMoved = sin(currenttheta) * moved;
         // Skip the one with error
         if ((xMoved == std::nan("")) || (yMoved == std::nan(""))) {
             //pros::lcd::print(0,"threading%f, %f",cos(currenttheta), moved);
             pros::delay(50);
             continue;
         }
-        XPos += xMoved;
-        YPos += yMoved;
-        previous += moved;
+        YPos += xMoved;
+        XPos += yMoved;
         //pros::lcd::print(0,"threading1%f, %f", XPos, YPos);
         pros::delay(50);
-        master.print(2,3,"important %f", XPos);
+        //master.print(2,3,"important %f", YPos);
     }
 }
 
@@ -82,7 +88,7 @@ void movePosition(double targetX, double targetY, bool faceBack){
 
     if(faceBack == true){
         //while(abs(targetX - XPos) > 0.1 && abs(targetY - YPos) > 0.1){
-            targetTheta = 180 * atan((targetY-YPos)/(targetX-XPos))/M_PI;
+            targetTheta = 180 * atan((targetX-XPos)/(targetY-YPos))/M_PI;
             targetDistance = sqrt(((targetX-XPos)*(targetX-XPos)) + ((targetY-YPos)*(targetY-YPos)));
             pros::lcd::print(0,"target Theta/dist %f, %f", targetTheta, targetDistance);
             turn(targetTheta-180, 2.5,0.2,0.1,1,1);
@@ -92,18 +98,21 @@ void movePosition(double targetX, double targetY, bool faceBack){
         //}
     }
     else{
-        pros::lcd::print(1,"target Theta/dist %f, %f", targetX, YPos);
-        pros::lcd::print(0,"target Theta/dist1 %f, %f", targetY, XPos);
-       //while(abs(targetX - YPos) > 0.1 || abs(targetY - XPos) > 0.1){
-            targetTheta = 180 * atan((targetY-YPos)/(targetX-XPos))/M_PI;
-            targetDistance = sqrt(((targetX-XPos)*(targetX-XPos)) + ((targetY-YPos)*(targetY-YPos)));
-            pros::lcd::print(0,"target Theta/dist %f, %f", targetTheta, targetDistance);
-            turn(targetTheta, 2.5, 0.2, 0.1, 1,1);
+        //pros::lcd::print(1,"target Theta/dist %f, %f", targetX, YPos);
+        //pros::lcd::print(0,"target Theta/dist1 %f, %f", targetY, XPos);
+        //while(abs(targetY - YPos) > 12 || abs(targetX - XPos) > 12){
+            //targetTheta = 180 * atan((targetY-YPos)/(targetX-XPos))/M_PI;
+            targetDistance = (sqrt(((targetX-XPos)*(targetX-XPos)) + ((targetY-YPos)*(targetY-YPos))));
+            if(abs(targetTheta-IMU.get_rotation()) > 5){
+                turn(targetTheta, 2.5, 0.2, 0.1, 1,1);
+            }
             pros::delay(100);
-            move(targetDistance, 0.2, 0.3, 0.2);
+            move(targetDistance, 0.1, 0.2, 0.2);
             pros::delay(100);
-            master.print(2,3,"important %f", XPos);
+            master.print(2,3,"%f, %f ,%f", targetDistance, YPos, IMU.get_rotation());
+            //master.print(3,3," %f", IMU.get_heading());
         //}
+
     }
 }
 void testThread(){

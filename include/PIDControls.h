@@ -2,7 +2,7 @@
 #define _PROS_PIDCONTROLS_H_
 
 
-static const double driveTicksPerInch = 17.90; //long distance constants, short range  0.1, 0.2, 0.1 (9.42477796077*50)/24
+static const double driveTicksPerInch = 34.95; //long distance constants, short range  0.1, 0.2, 0.1 (9.42477796077*50)/24
 static const double inchToTicks = 3.141592/150;
 static const double rotationInit = 0.0;
 static const double radiusCenter = 10; //For calculating the arc length
