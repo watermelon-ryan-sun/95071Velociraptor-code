@@ -11,6 +11,9 @@ void tareMotors() {
 }
 void turn(double heading, double Kp, double Kd, double Ki, double O, double U) { //turns a certain amount of degrees
 /*New turn code with IMU*/
+double prevX = XPos;
+double prevY = YPos;
+
 double error = heading-IMU.get_rotation();
 error *= O;
 error /= U;
@@ -46,6 +49,8 @@ error /= U;
         }
     }
    stopMotors();
+   XPos = prevX;
+   YPos=prevY;
    pros::lcd::print(1, "degrees after %f", IMU.get_rotation());
 }
 void PIDArm(){
@@ -70,7 +75,60 @@ void PIDIntake(){
     intake.tare_position();
 
 }
+void move2(double targetX, double targetY,double kP, double kI, double kD) {
+    tareMotors();
+   double rightOutput = 0.0;
+   double leftOutput = 0.0;
+   double targetDistance = sqrt(0);//find distance needed
+   double errorR = targetDistance *= driveTicksPerInch;
+   double errorL = targetDistance *= driveTicksPerInch;
+   double rightMeasured = (RM_MOTOR.get_position());
+   double leftMeasured = (LM_MOTOR.get_position());
+   double distanceTL = 0.0;//area under the curve
+   double distanceTR = 0.0;//actual position in ticks
+   double integralR = 0.0;
+   double integralL = 0.0;
+   double targetHeading = IMU.get_rotation();
+   double prevErrorR = 0;
+   double prevErrorL = 0;
+   // TODO: HX comment, the following two lines do not do anything, the value calculated is not assigned back.
+   // They can be removed.
+   while(errorR > distanceTR || errorL > distanceTL){
 
+    integralR = errorR - distanceTR;
+    integralL = errorL - distanceTL;
+
+    
+    distanceTR = rightMeasured;
+    distanceTL = leftMeasured;
+    if(integralR > 300){
+        integralR = 300;
+    }
+    if(integralL > 300){
+        integralL = 300;
+    }
+    if(targetHeading!= IMU.get_rotation()){
+        rightOutput = ((integralR)*kI + (errorR*kP) + (targetHeading - IMU.get_heading())*kD);//missing length left in ticks 
+        leftOutput = ((integralL)*kI + (errorL*kP) - ((targetHeading - IMU.get_heading())));//what does kP do?
+    }
+    else{
+        rightOutput = ((integralR)*kI + (errorR*kP));//missing length left in ticks 
+        leftOutput = ((integralL)*kI + (errorL*kP));//what does kP do?
+    }
+    rightOutput = ((integralR)*kI - (errorR*kP) - (errorR-prevErrorR)*kD);//missing length left in ticks 
+    leftOutput = ((integralL)*kI + (errorL*kP) - ((errorL-prevErrorL)*kD));//what does kP do?
+    pros::lcd::print(0, "before calling moveRight");
+    moveRight(rightOutput);
+    pros::lcd::print(0, "after calling moveRight");
+    moveLeft(leftOutput);
+    pros::lcd::print(0, "right output %f", rightOutput);
+    rightMeasured = ((RB_MOTOR.get_position() + RF_MOTOR.get_position() + RM_MOTOR.get_position())/3);
+    leftMeasured = ((LB_MOTOR.get_position() + LF_MOTOR.get_position() + LM_MOTOR.get_position())/3);
+    //OdomCalibration();
+    pros::delay(10);
+   }
+   stopMotors();//hit the ideal distance so stop yourself
+}
 void move(double distance, double kP, double kI, double kD) {
     tareMotors();
    double rightOutput = 0.0;

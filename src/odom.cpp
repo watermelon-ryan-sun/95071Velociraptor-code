@@ -7,7 +7,10 @@ volatile double XPos = 0;
 volatile double YPos = 0;
 double moved = 0;
 double RM_moved = 0, LM_moved = 0;
-
+volatile double currentAngle = 0;  // current heading in radians
+volatile double prevAngle = 0; // previous heading in radians
+double RM_position = 0, LM_position = 0, BM_Position = 0;
+double RMPrevPos = 0, LMPrevPos = 0, BMPrevPos = 0;
 void recordPosition(){//repeatdly call
     double RM_position = 0, LM_position = 0;
     IMU.set_rotation(0);
@@ -53,29 +56,6 @@ void recordPosition(){//repeatdly call
         //master.print(2,3,"important %f", YPos);
     }
 }
-void recordWhileMoving(){
-    double RM_position = 0, LM_position = 0;
-    double targetHeading = IMU.get_heading();
-    double rightmoved = 0;//update constantly
-    double leftmoved = 0;
-    double prevRight;
-    double prevLeft;
-    double leftFromRight;
-        while(true){
-    if(abs(targetHeading-IMU.get_heading()) == 0){
-        XPos += cos(targetHeading) * rightmoved;
-        YPos += sin(targetHeading) * rightmoved;
-    }
-    else{
-        double arcTheta = (rightmoved-prevRight)/((rightmoved-prevRight)-(leftmoved-prevLeft))/((rightmoved-prevRight)+leftFromRight);
-        double radiusRight = 0;// arc/arctheta
-        double radiusLeft = 0;// arcLeft/arctheta
-        //do triangle thing to add Xpos and YPos
-
-    }
-}
-}
-
 // Use Tao's algorithm
 /* TO BE IMPLEMENTED
 void recordPosition2(){
@@ -136,11 +116,8 @@ void movePosition(double targetX, double targetY, bool faceBack){
         //pros::lcd::print(1,"target Theta/dist %f, %f", targetX, YPos);
         //pros::lcd::print(0,"target Theta/dist1 %f, %f", targetY, XPos);
         //while(abs(targetY - YPos) > 12 || abs(targetX - XPos) > 12){
-            //targetTheta = 180 * atan((targetY-YPos)/(targetX-XPos))/M_PI;
+            targetTheta = 180 * atan((targetY-YPos)/(targetX-XPos))/M_PI;
             targetDistance = (sqrt(((targetX-XPos)*(targetX-XPos)) + ((targetY-YPos)*(targetY-YPos))));
-            if(abs(targetTheta-IMU.get_rotation()) > 5){
-                turn(targetTheta, 2.5, 0.2, 0.1, 1,1);
-            }
             pros::delay(100);
             move(targetDistance, 0.1, 0.2, 0.2);
             pros::delay(100);
