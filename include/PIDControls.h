@@ -15,6 +15,7 @@ static const double verticalOffset2 = verticalOffset1;
 void tareMotors();
 void turn(double heading, double Kp, double Kd, double Ki,double O, double U);
 void move(double distance,double kP, double kI, double kD);
+void move2(double targetX, double targetY,double targetTheta,double kP, double kI, double kD);
 void move_straight(double distance);
 void RunIntake(double target);
 void stopMotors();

@@ -75,11 +75,11 @@ void PIDIntake(){
     intake.tare_position();
 
 }
-void move2(double targetX, double targetY,double kP, double kI, double kD) {
+void move2(double targetX, double targetY,double targetTheta,double kP, double kI, double kD) {
     tareMotors();
    double rightOutput = 0.0;
    double leftOutput = 0.0;
-   double targetDistance = sqrt(0);//find distance needed
+   double targetDistance = sqrt((targetX-XPos)*(targetX-XPos) + (targetY+YPos)*(targetY-YPos));//find distance needed
    double errorR = targetDistance *= driveTicksPerInch;
    double errorL = targetDistance *= driveTicksPerInch;
    double rightMeasured = (RM_MOTOR.get_position());
@@ -88,7 +88,6 @@ void move2(double targetX, double targetY,double kP, double kI, double kD) {
    double distanceTR = 0.0;//actual position in ticks
    double integralR = 0.0;
    double integralL = 0.0;
-   double targetHeading = IMU.get_rotation();
    double prevErrorR = 0;
    double prevErrorL = 0;
    // TODO: HX comment, the following two lines do not do anything, the value calculated is not assigned back.
@@ -107,9 +106,9 @@ void move2(double targetX, double targetY,double kP, double kI, double kD) {
     if(integralL > 300){
         integralL = 300;
     }
-    if(targetHeading!= IMU.get_rotation()){
-        rightOutput = ((integralR)*kI + (errorR*kP) + (targetHeading - IMU.get_heading())*kD);//missing length left in ticks 
-        leftOutput = ((integralL)*kI + (errorL*kP) - ((targetHeading - IMU.get_heading())));//what does kP do?
+    if(targetTheta!= IMU.get_rotation()){
+        rightOutput = ((integralR)*kI + (errorR*kP) + (targetTheta - IMU.get_heading())*kD);//missing length left in ticks 
+        leftOutput = ((integralL)*kI + (errorL*kP) - ((targetTheta - IMU.get_heading())));//what does kP do?
     }
     else{
         rightOutput = ((integralR)*kI + (errorR*kP));//missing length left in ticks 

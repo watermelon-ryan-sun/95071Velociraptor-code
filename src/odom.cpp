@@ -153,13 +153,18 @@ void movePosition(double targetX, double targetY, bool faceBack){
         //pros::lcd::print(1,"target Theta/dist %f, %f", targetX, YPos);
         //pros::lcd::print(0,"target Theta/dist1 %f, %f", targetY, XPos);
         //while(abs(targetY - YPos) > 12 || abs(targetX - XPos) > 12){
+        if(targetX == XPos){
+            targetTheta = 0;
+        }
+        else{
             targetTheta = 180 * atan((targetY-YPos)/(targetX-XPos))/M_PI;
-            targetDistance = (sqrt(((targetX-XPos)*(targetX-XPos)) + ((targetY-YPos)*(targetY-YPos))));
-            pros::delay(100);
-            move(targetDistance, 0.1, 0.2, 0.2);
-            pros::delay(100);
-            master.print(2,3,"%f, %f ,%f", targetDistance, YPos, IMU.get_rotation());
-            //master.print(3,3," %f", IMU.get_heading());
+            }
+        turn(targetTheta, 2.5,0.2,0.1,1,1);
+        pros::delay(10);
+        move2(targetX, targetY, targetTheta,0.1, 0.2, 0.2);
+        pros::delay(100);
+        master.print(2,3,"%f, %f ,%f", targetDistance, YPos, IMU.get_rotation());
+        //master.print(3,3," %f", IMU.get_heading());
         //}
 
     }

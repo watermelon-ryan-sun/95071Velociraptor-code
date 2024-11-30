@@ -1,0 +1,47 @@
+diff --git a/src/odom.cpp b/src/odom.cpp
+index 7ce66bc..d8ba120 100644
+--- a/src/odom.cpp
++++ b/src/odom.cpp
+@@ -10,7 +10,7 @@ static const double BTrackRadius = 5.85;
+ 
+ volatile double XPos = 0;
+ volatile double YPos = 0;
+-volatile double currentAngle = 0;  // current heading in radians
++volatile double currentAngle = M_PI / 2.0;  // current heading in radians
+ volatile double prevAngle = 0; // previous heading in radians
+ double RM_position = 0, LM_position = 0, BM_Position = 0;
+ double RMPrevPos = 0, LMPrevPos = 0, BMPrevPos = 0;
+@@ -47,22 +47,29 @@ void recordPosition(){ //repeatdly call
+         LMPrevPos = LM_position;
+         BMPrevPos = BM_position;
+         //pros::lcd::print(0,"moved%f, %f, %f", moved, RM_position, LM_position);
+-        double currentAngle = IMU.get_heading() * M_PI / 180.0;
++        double currentAngle = (360 - IMU.get_heading()) * M_PI / 180.0;
++        if (currentAngle < 0) {
++            currentAngle += 2 * M_PI;
++        } else if (currentAngle > 2 * M_PI) {
++            absoluteAngle -= 2 * M_PI;
++        }
++
+         deltaTheta = currentAngle - prevAngle;
+         halfDeltaTheta = deltaTheta / 2.0;
+         prevAngle = currentAngle;
+ 
+-        //If we didn't turn, then we only translated
+-        if(deltaTheta == 0) {
++        // If the deltaTheta is too much, If we didn't turn, then we only translated
++        if(abs(deltaTheta) <= 0.5) {
+             deltaXLocal = BM_moved;
+             // could be either L or R, since if deltaTheta == 0 we assume they're =
+             deltaYLocal = LM_moved;
++            halfDeltaTheta = 0;
+         } else {  //Else, caluclate the new local position
+             //Calculate the changes in the X and Y values (INCHES)
+             //General equation is:
+                 //Distance = 2 * Radius * sin(deltaTheta / 2)
+             deltaXLocal = 2 * sin(halfDeltaTheta) * ((BM_moved / deltaTheta) + BTrackRadius);
+-            deltaYLocal = 2 * sin(halfDeltaTheta) * ((RM_moved / deltaTheta) - RTrackRadius);
++            deltaYLocal = 2 * sin(halfDeltaTheta) * ((RM_moved / deltaTheta) + RTrackRadius);
+         }
+ 
+         //The average angle of the robot during it's arc (RADIANS)

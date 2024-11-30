@@ -1,0 +1,14 @@
+diff --git a/include/main.h b/include/main.h
+index 4241bd2..e6fcb93 100644
+--- a/include/main.h
++++ b/include/main.h
+@@ -64,6 +64,9 @@ extern "C" {
+ #endif
+ extern volatile double XPos;
+ extern volatile double YPos;
++volatile double currentAngle = 0;  // current heading in radians
++volatile double prevAngle = 0;
++
+ void autonomous(void);
+ void initialize(void);
+ void disabled(void);

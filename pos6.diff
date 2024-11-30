@@ -1,0 +1,139 @@
+diff --git a/include/main.h b/include/main.h
+index 4241bd2..e6fcb93 100644
+--- a/include/main.h
++++ b/include/main.h
+@@ -64,6 +64,9 @@ extern "C" {
+ #endif
+ extern volatile double XPos;
+ extern volatile double YPos;
++volatile double currentAngle = 0;  // current heading in radians
++volatile double prevAngle = 0;
++
+ void autonomous(void);
+ void initialize(void);
+ void disabled(void);
+diff --git a/src/odom.cpp b/src/odom.cpp
+index daa73e3..649462a 100644
+--- a/src/odom.cpp
++++ b/src/odom.cpp
+@@ -3,54 +3,90 @@
+ #include "odom.h"
+ #include "PIDControls.h"
+ 
++//Distances of tracking wheels from tracking center (INCHES)
++static const double LTrackRadius = 6.8335;
++static const double RTrackRadius = 6.8335;
++static const double BTrackRadius = 5.85;
++
+ volatile double XPos = 0;
+ volatile double YPos = 0;
+-double moved = 0;
+-double RM_moved = 0, LM_moved = 0;
+-volatile double currentAngle = 0;  // current heading in radians
++volatile double currentAngle = M_PI / 2.0;  // current heading in radians
+ volatile double prevAngle = 0; // previous heading in radians
+ double RM_position = 0, LM_position = 0, BM_Position = 0;
+ double RMPrevPos = 0, LMPrevPos = 0, BMPrevPos = 0;
++
+ void recordPosition(){//repeatdly call
+     double RM_position = 0, LM_position = 0;
++    double RM_moved = 0, LM_moved = 0, BM_moved = 0;
++    double deltaTheta = 0, halfDeltaTheta = 0;
+     IMU.set_rotation(0);
+     RM_MOTOR.tare_position();
+     LM_MOTOR.tare_position();
+-    double targetHeading = 0;//plan to make volatile, so that different moves can alter it to their target
+-    double prevRight = 0;
+-    double prevLeft = 0;
+-    double leftFromRight = 0;
++    //The changes in the X and Y positions (INCHES)
++    double deltaXLocal = 0;
++    double deltaYLocal = 0;
++
++    //The X and Y offsets converted from their local forms (INCHES)
++    double deltaXGlobal = 0;
++    double deltaYGlobal = 0;
++
+     while(true){
+         // TODO: Here, we do not track Left and Right travelling and do not calculate the drift.
+         // It uses (L + R)/2 to simulate the tank tracking center's move.
+-        pros::delay(5000);        
++        pros::delay(2000);        
+         RM_position = RM_MOTOR.get_position();
+         LM_position = LM_MOTOR.get_position();
+-        RM_moved = RM_position - prevRight;
+-        LM_moved = LM_position - prevLeft;
++        //BM_position = BM_MOTOR.get_position();
++
++        // Convert to inch
++        RM_moved = (RM_position - RMPrevPos) / driveTicksPerInch;
++        LM_moved = (LM_position - LMPrevPos) / driveTicksPerInch;
++        BM_moved = (BM_position - BMPrevPos) / driveTicksPerInch;
++
++        RMPrevPos = RM_position;
++        LMPrevPos = LM_position;
++        BMPrevPos = BM_position;
++
+         //pros::lcd::print(0,"moved%f, %f, %f", moved, RM_position, LM_position);
+-        double currenttheta = IMU.get_rotation();
+-        currenttheta -= 90;
+-        if(targetHeading == currenttheta){
+-        double xMoved = cos(currenttheta) * RM_moved;
+-        double yMoved = sin(currenttheta) * LM_moved;
+-        // Skip the one with error
+-            if ((xMoved == std::nan("")) || (yMoved == std::nan(""))) {
+-                //pros::lcd::print(0,"threading%f, %f",cos(currenttheta), moved);
+-                pros::delay(50);
+-                continue;
+-                }
+-            YPos += xMoved;
+-            XPos += yMoved;
++        double currentAngle = (360 - IMU.get_heading()) * M_PI / 180.0;
++        if (currentAngle < 0) {
++            currentAngle += 2 * M_PI;
++        } else if (currentAngle > 2 * M_PI) {
++            absoluteAngle -= 2 * M_PI;
+         }
+-        else{//arc'd to the right
+-            double arcTheta = (RM_moved - prevRight)/((RM_moved-prevRight)-(LM_moved-prevLeft))/((RM_moved-prevRight)+leftFromRight);
+-            double radiusRight = 0;// arc/arctheta
+-            double radiusLeft = 0;// arcLeft/arctheta
+-            double length = (sin(arcTheta/2)*radiusCenter)*2;
+-            XPos += (cos(currenttheta)*length);
+-            YPos += (sin(currenttheta)*length);
++
++        deltaTheta = currentAngle - prevAngle;
++        halfDeltaTheta = deltaTheta / 2.0;
++        prevAngle = currentAngle;
++
++        // If the deltaTheta is too much, If we didn't turn, then we only translated
++        if(abs(deltaTheta) <= 0.5) {
++            deltaXLocal = BM_moved;
++            // could be either L or R, since if deltaTheta == 0 we assume they're =
++            deltaYLocal = LM_moved;
++            halfDeltaTheta = 0;
++        } else {  //Else, caluclate the new local position
++            //Calculate the changes in the X and Y values (INCHES)
++            //General equation is:
++                //Distance = 2 * Radius * sin(deltaTheta / 2)
++            deltaXLocal = 2 * sin(halfDeltaTheta) * ((BM_moved / deltaTheta) + BTrackRadius);
++            deltaYLocal = 2 * sin(halfDeltaTheta) * ((RM_moved / deltaTheta) + RTrackRadius);
+         }
++
++        //The average angle of the robot during it's arc (RADIANS)
++        avgThetaForArc = currentAbsoluteOrientation - halfDeltaTheta;
++
++        deltaXGlobal = (deltaYLocal * cos(avgThetaForArc)) - (deltaXLocal * sin(avgThetaForArc));
++        deltaYGlobal = (deltaYLocal * sin(avgThetaForArc)) + (deltaXLocal * cos(avgThetaForArc));
++
++        if ((deltaXGlobal == std::nan("")) || (yMoved == std::nan(""))) {
++             //pros::lcd::print(0,"threading%f, %f",cos(currenttheta), moved);
++             pros::delay(50);
++             continue;
++         }
++        XPos += deltaXGlobal;
++        YPos += deltaYGlobal;
++
+         //pros::lcd::print(0,"threading1%f, %f", XPos, YPos);
+         pros::delay(50);
+         //master.print(2,3,"important %f", YPos);
