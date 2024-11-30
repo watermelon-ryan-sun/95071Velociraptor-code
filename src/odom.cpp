@@ -4,9 +4,9 @@
 #include "PIDControls.h"
 
 //Distances of tracking wheels from tracking center (INCHES)
-static const double LTrackRadius = 6.8335;
-static const double RTrackRadius = 6.8335;
-static const double BTrackRadius = 5.85;
+static const double LTrackRadius = 5;
+static const double RTrackRadius = 5;
+static const double BTrackRadius = 3.5;
 
 volatile double XPos = 0;
 volatile double YPos = 0;
@@ -16,11 +16,12 @@ double RM_position = 0, LM_position = 0, BM_position = 0;
 double RMPrevPos = 0, LMPrevPos = 0, BMPrevPos = 0;
 
 void recordPosition(){//repeatdly call
+pros::delay(2000);
     double RM_position = 0, LM_position = 0;
     double RM_moved = 0, LM_moved = 0, BM_moved = 0;
     double deltaTheta = 0, halfDeltaTheta = 0;
     double avgThetaForArc = 0;
-    IMU.set_rotation(0);
+    IMU.set_rotation(90);
     RM_MOTOR.tare_position();
     LM_MOTOR.tare_position();
     //The changes in the X and Y positions (INCHES)
@@ -33,8 +34,7 @@ void recordPosition(){//repeatdly call
 
     while(true){
         // TODO: Here, we do not track Left and Right travelling and do not calculate the drift.
-        // It uses (L + R)/2 to simulate the tank tracking center's move.
-        pros::delay(2000);        
+        // It uses (L + R)/2 to simulate the tank tracking center's move.        
         RM_position = RM_MOTOR.get_position();
         LM_position = LM_MOTOR.get_position();
         //BM_position = BM_MOTOR.get_position();

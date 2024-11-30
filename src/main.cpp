@@ -111,6 +111,11 @@ specialOdomSkills();
  * task, not resume it from where it left off.
  */
 void opcontrol() {
+	while(true){
+		master.print(0,1,"YPos %f", YPos);
+		pros::lcd::print(0, "IMU %f", IMU.get_rotation());
+		pros::delay(50);
+	}
 bool drive = false;
 clampmode = true;
 Arm.tare_position();
