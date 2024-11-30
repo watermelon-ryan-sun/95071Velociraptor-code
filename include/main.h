@@ -64,6 +64,9 @@ extern "C" {
 #endif
 extern volatile double XPos;
 extern volatile double YPos;
+extern volatile double currentAngle;  // current heading in radians
+extern volatile double prevAngle;
+
 void autonomous(void);
 void initialize(void);
 void disabled(void);
