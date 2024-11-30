@@ -13,32 +13,67 @@ void recordPosition(){//repeatdly call
     IMU.set_rotation(0);
     RM_MOTOR.tare_position();
     LM_MOTOR.tare_position();
+    double targetHeading = 0;//plan to make volatile, so that different moves can alter it to their target
+    double prevRight = 0;
+    double prevLeft = 0;
+    double leftFromRight = 0;
     while(true){
         // TODO: Here, we do not track Left and Right travelling and do not calculate the drift.
         // It uses (L + R)/2 to simulate the tank tracking center's move.
         pros::delay(5000);        
         RM_position = RM_MOTOR.get_position();
         LM_position = LM_MOTOR.get_position();
-        moved = (((RM_position - RM_moved) + (LM_position - LM_moved)/2)) / driveTicksPerInch;
-        RM_moved = RM_position;
-        LM_moved = LM_position;
+        RM_moved = RM_position - prevRight;
+        LM_moved = LM_position - prevLeft;
         //pros::lcd::print(0,"moved%f, %f, %f", moved, RM_position, LM_position);
         double currenttheta = IMU.get_rotation();
         currenttheta -= 90;
-        double xMoved = cos(currenttheta) * moved;
-        double yMoved = sin(currenttheta) * moved;
+        if(targetHeading == currenttheta){
+        double xMoved = cos(currenttheta) * RM_moved;
+        double yMoved = sin(currenttheta) * LM_moved;
         // Skip the one with error
-        if ((xMoved == std::nan("")) || (yMoved == std::nan(""))) {
-            //pros::lcd::print(0,"threading%f, %f",cos(currenttheta), moved);
-            pros::delay(50);
-            continue;
+            if ((xMoved == std::nan("")) || (yMoved == std::nan(""))) {
+                //pros::lcd::print(0,"threading%f, %f",cos(currenttheta), moved);
+                pros::delay(50);
+                continue;
+                }
+            YPos += xMoved;
+            XPos += yMoved;
         }
-        YPos += xMoved;
-        XPos += yMoved;
+        else{//arc'd to the right
+            double arcTheta = (RM_moved - prevRight)/((RM_moved-prevRight)-(LM_moved-prevLeft))/((RM_moved-prevRight)+leftFromRight);
+            double radiusRight = 0;// arc/arctheta
+            double radiusLeft = 0;// arcLeft/arctheta
+            double length = (sin(arcTheta/2)*radiusCenter)*2;
+            XPos += (cos(currenttheta)*length);
+            YPos += (sin(currenttheta)*length);
+        }
         //pros::lcd::print(0,"threading1%f, %f", XPos, YPos);
         pros::delay(50);
         //master.print(2,3,"important %f", YPos);
     }
+}
+void recordWhileMoving(){
+    double RM_position = 0, LM_position = 0;
+    double targetHeading = IMU.get_heading();
+    double rightmoved = 0;//update constantly
+    double leftmoved = 0;
+    double prevRight;
+    double prevLeft;
+    double leftFromRight;
+        while(true){
+    if(abs(targetHeading-IMU.get_heading()) == 0){
+        XPos += cos(targetHeading) * rightmoved;
+        YPos += sin(targetHeading) * rightmoved;
+    }
+    else{
+        double arcTheta = (rightmoved-prevRight)/((rightmoved-prevRight)-(leftmoved-prevLeft))/((rightmoved-prevRight)+leftFromRight);
+        double radiusRight = 0;// arc/arctheta
+        double radiusLeft = 0;// arcLeft/arctheta
+        //do triangle thing to add Xpos and YPos
+
+    }
+}
 }
 
 // Use Tao's algorithm
