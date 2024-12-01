@@ -93,6 +93,7 @@ void autonomous() {
 			skills();
 			break;
 }*/
+//blueRightAWP();
 //skills();
 specialOdomSkills();
 }
@@ -114,6 +115,7 @@ void opcontrol() {
 	while(true){
 		master.print(0,1,"YPos %f", YPos);
 		pros::lcd::print(0, "IMU %f", IMU.get_rotation());
+		pros::lcd::print(5,"%f,%f", XPos, YPos);
 		pros::delay(50);
 	}
 bool drive = false;

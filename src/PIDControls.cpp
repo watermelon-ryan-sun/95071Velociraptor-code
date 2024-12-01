@@ -172,7 +172,7 @@ void move(double distance, double kP, double kI, double kD) {
     leftVelocity = ((LB_MOTOR.get_actual_velocity() + LF_MOTOR.get_actual_velocity() + LM_MOTOR.get_actual_velocity())/3);
     rightVelocity = ((RB_MOTOR.get_actual_velocity() + RF_MOTOR.get_actual_velocity() + RM_MOTOR.get_actual_velocity())/3);//average right velocity in rpms
     //OdomCalibration();
-    pros::delay(10);
+    pros::delay(5);
    }
    stopMotors();//hit the ideal distance so stop yourself
 }
@@ -219,7 +219,7 @@ void moveBack(double distance, double kP, double kI, double kD) {
     leftMeasured = -((LB_MOTOR.get_position() + LF_MOTOR.get_position() + LM_MOTOR.get_position())/3);
     leftVelocity = -((LB_MOTOR.get_actual_velocity() + LF_MOTOR.get_actual_velocity() + LM_MOTOR.get_actual_velocity())/3);
     rightVelocity = -((RB_MOTOR.get_actual_velocity() + RF_MOTOR.get_actual_velocity() + RM_MOTOR.get_actual_velocity())/3);//average right velocity in rpms
-    pros::delay(10);
+    pros::delay(5);
    }
    stopMotors();//hit the ideal distance so stop yourself
 }

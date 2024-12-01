@@ -12,7 +12,7 @@ void blueRightAWP(){
 	bool mode = false;
 	bool mode2 = true;
 	bool mode3 = true;
-	moveBack(46,0.2,0.3,0.2);
+	moveBack(20,0.2,0.3,0.2);
 	pros::delay(500);
 	clampDown();
 	pros::delay(500);
@@ -20,9 +20,9 @@ void blueRightAWP(){
 	pros::delay(50);
 	turn(-90,2.5,0.2,0.01,1,1);
 	pros::delay(50);
-	move(38,0.2,0.3,0.2);
+	move(24,0.2,0.3,0.2);
 	pros::delay(50);
-	turn(-175,2.5,0.2,0.01,9,9);
+	turn(180,2.5,0.2,0.01,9,9);
 	pros::delay(50);
 	move(24,0.2,0.3,0.2);
     pros::delay(500);
@@ -277,9 +277,10 @@ void skills(){
 	move(10,0.2,0.3,0.2);
 }
 void specialOdomSkills(){
+	pros::delay(2000);
 	XPos = 0;
-	YPos = 12;
-	movePosition(0,36,false);
+	YPos = 0;
+	move(60,0.2,0.3,0.2);
 
 	pros::lcd::print(0, "movedTicks %f", RM_MOTOR.get_position());
 

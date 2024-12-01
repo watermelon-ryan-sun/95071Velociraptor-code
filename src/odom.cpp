@@ -16,7 +16,6 @@ double RM_position = 0, LM_position = 0, BM_position = 0;
 double RMPrevPos = 0, LMPrevPos = 0, BMPrevPos = 0;
 
 void recordPosition(){//repeatdly call
-pros::delay(2000);
     double RM_position = 0, LM_position = 0;
     double RM_moved = 0, LM_moved = 0, BM_moved = 0;
     double deltaTheta = 0, halfDeltaTheta = 0;
@@ -31,8 +30,13 @@ pros::delay(2000);
     //The X and Y offsets converted from their local forms (INCHES)
     double deltaXGlobal = 0;
     double deltaYGlobal = 0;
-
+    pros::delay(2000);
     while(true){
+        if ((deltaXGlobal == std::nan("")) || (deltaYGlobal == std::nan(""))) {
+             //pros::lcd::print(0,"threading%f, %f",cos(currenttheta), moved);
+             pros::delay(50);
+             continue;
+         }
         // TODO: Here, we do not track Left and Right travelling and do not calculate the drift.
         // It uses (L + R)/2 to simulate the tank tracking center's move.        
         RM_position = RM_MOTOR.get_position();
@@ -61,7 +65,7 @@ pros::delay(2000);
         prevAngle = currentAngle;
 
         // If the deltaTheta is too much, If we didn't turn, then we only translated
-        if(abs(deltaTheta) <= 0.5) {
+        if(abs(deltaTheta) <= M_PI/360) {
             deltaXLocal = BM_moved;
             // could be either L or R, since if deltaTheta == 0 we assume they're =
             deltaYLocal = LM_moved;
@@ -77,14 +81,8 @@ pros::delay(2000);
         //The average angle of the robot during it's arc (RADIANS)
         avgThetaForArc = currentAngle - halfDeltaTheta;
 
-        deltaXGlobal = (deltaYLocal * cos(avgThetaForArc)) - (deltaXLocal * sin(avgThetaForArc));
-        deltaYGlobal = (deltaYLocal * sin(avgThetaForArc)) + (deltaXLocal * cos(avgThetaForArc));
-
-        if ((deltaXGlobal == std::nan("")) || (deltaYGlobal == std::nan(""))) {
-             //pros::lcd::print(0,"threading%f, %f",cos(currenttheta), moved);
-             pros::delay(50);
-             continue;
-         }
+        deltaYGlobal = (deltaYLocal * cos(avgThetaForArc)) - (deltaXLocal * sin(avgThetaForArc));
+        deltaXGlobal = (deltaYLocal * sin(avgThetaForArc)) + (deltaXLocal * cos(avgThetaForArc));
         XPos += deltaXGlobal;
         YPos += deltaYGlobal;
 
@@ -135,18 +133,18 @@ void recordPosition2(){
 */
 
 void movePosition(double targetX, double targetY, bool faceBack){
-    double targetTheta = 0.0;
-    double targetDistance = 0.0;
+    double targetTheta;
+    double targetDistance;
 
     if(faceBack == true){
         //while(abs(targetX - XPos) > 0.1 && abs(targetY - YPos) > 0.1){
-            targetTheta = 180 * atan((targetX-XPos)/(targetY-YPos))/M_PI;
+            targetTheta = 180 * atan((targetY-YPos)/(targetX-XPos))/M_PI;
             targetDistance = sqrt(((targetX-XPos)*(targetX-XPos)) + ((targetY-YPos)*(targetY-YPos)));
             pros::lcd::print(0,"target Theta/dist %f, %f", targetTheta, targetDistance);
             turn(targetTheta-180, 2.5,0.2,0.1,1,1);
-            pros::delay(100);
-            moveBack(targetDistance,0.2,0.3,0.2);
-            pros::delay(100);
+            pros::delay(50);
+            moveBack(targetDistance,0.1,0.1,0.1);
+            pros::delay(50);
         //}
     }
     else{
@@ -154,16 +152,29 @@ void movePosition(double targetX, double targetY, bool faceBack){
         //pros::lcd::print(0,"target Theta/dist1 %f, %f", targetY, XPos);
         //while(abs(targetY - YPos) > 12 || abs(targetX - XPos) > 12){
         if(targetX == XPos){
-            targetTheta = 0;
+            targetTheta = 90;
         }
         else{
-            targetTheta = 180 * atan((targetY-YPos)/(targetX-XPos))/M_PI;
+            if(targetX - XPos > 0 && targetY - YPos > 0){
+                targetTheta = 180 * atan((targetY-YPos)/(targetX-XPos))/M_PI;
+            }
+            else if(targetX - XPos < 0 && targetY - YPos > 0){
+                targetTheta = ((90 - (180 * atan((targetY-YPos)/(targetX-XPos)))/M_PI));
+            }
+            else if(targetX - XPos < 0 && targetY - YPos < 0){
+                targetTheta = ( 180 - 180 * atan((targetY-YPos)/(targetX-XPos))/M_PI);
+            }
+            else if(targetX - XPos > 0 && targetY - YPos < 0){
+                targetTheta = ( 270 - 180* atan((targetY-YPos)/(targetX-XPos))/M_PI);
+            }
             }
         turn(targetTheta, 2.5,0.2,0.1,1,1);
         pros::delay(10);
-        move2(targetX, targetY, targetTheta,0.1, 0.2, 0.2);
+        targetDistance = sqrt(((targetX-XPos)*(targetX-XPos)) + ((targetY-YPos)*(targetY-YPos)));
+        move(targetDistance,0.2, 0.1,0.2);
         pros::delay(100);
         master.print(2,3,"%f, %f ,%f", targetDistance, YPos, IMU.get_rotation());
+        pros::lcd::print(5,"%f,%f,%f", XPos, YPos, targetTheta);
         //master.print(3,3," %f", IMU.get_heading());
         //}
 
