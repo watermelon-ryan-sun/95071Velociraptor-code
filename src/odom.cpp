@@ -4,7 +4,7 @@
 #include "PIDControls.h"
 
 //Distances of tracking wheels from tracking center (INCHES)
-static const double LTrackRadius = 5;
+static const double LTrackRadius = 5;//~5 now
 static const double RTrackRadius = 5;
 static const double BTrackRadius = 3.5;
 
@@ -16,11 +16,11 @@ double RM_position = 0, LM_position = 0, BM_position = 0;
 double RMPrevPos = 0, LMPrevPos = 0, BMPrevPos = 0;
 
 void recordPosition(){//repeatdly call
+    tareMotors();
     double RM_position = 0, LM_position = 0;
     double RM_moved = 0, LM_moved = 0, BM_moved = 0;
     double deltaTheta = 0, halfDeltaTheta = 0;
     double avgThetaForArc = 0;
-    IMU.set_rotation(90);
     RM_MOTOR.tare_position();
     LM_MOTOR.tare_position();
     //The changes in the X and Y positions (INCHES)
@@ -32,6 +32,7 @@ void recordPosition(){//repeatdly call
     double deltaYGlobal = 0;
     pros::delay(2000);
     while(true){
+        pros::delay(10000);
         if ((deltaXGlobal == std::nan("")) || (deltaYGlobal == std::nan(""))) {
              //pros::lcd::print(0,"threading%f, %f",cos(currenttheta), moved);
              pros::delay(50);
@@ -53,7 +54,7 @@ void recordPosition(){//repeatdly call
         BMPrevPos = BM_position;
 
         //pros::lcd::print(0,"moved%f, %f, %f", moved, RM_position, LM_position);
-        double currentAngle = (360 - IMU.get_heading()) * M_PI / 180.0;
+        double currentAngle = (90 - IMU.get_rotation()) * M_PI / 180.0;
         if (currentAngle < 0) {
             currentAngle += 2 * M_PI;
         } else if (currentAngle > 2 * M_PI) {
@@ -74,9 +75,10 @@ void recordPosition(){//repeatdly call
             //Calculate the changes in the X and Y values (INCHES)
             //General equation is:
                 //Distance = 2 * Radius * sin(deltaTheta / 2)
-            deltaXLocal = 2 * sin(halfDeltaTheta) * ((BM_moved / deltaTheta) + BTrackRadius);
+            //deltaXLocal = 2 * sin(halfDeltaTheta) * ((BM_moved / deltaTheta) + BTrackRadius);
             deltaYLocal = 2 * sin(halfDeltaTheta) * ((RM_moved / deltaTheta) + RTrackRadius);
         }
+
 
         //The average angle of the robot during it's arc (RADIANS)
         avgThetaForArc = currentAngle - halfDeltaTheta;
@@ -86,8 +88,9 @@ void recordPosition(){//repeatdly call
         XPos += deltaXGlobal;
         YPos += deltaYGlobal;
 
-        //pros::lcd::print(0,"threading1%f, %f", XPos, YPos);
-        pros::delay(50);
+        pros::lcd::print(3,"%f, %f, %f", deltaTheta,RM_moved, LM_moved);
+        pros::lcd::print(4,"%f",avgThetaForArc);
+        pros::delay(600000);
         //master.print(2,3,"important %f", YPos);
     }
 }

@@ -18,16 +18,16 @@ void blueRightAWP(){
 	pros::delay(500);
 	RunIntake(212);
 	pros::delay(50);
-	turn(-90,2.5,0.2,0.01,1,1);
+	turn(-90,2,0.2,0.01,1,1);
 	pros::delay(50);
 	move(24,0.2,0.3,0.2);
 	pros::delay(50);
-	turn(180,2.5,0.2,0.01,9,9);
+	turn(180,2,0.2,0.01,9,9);
 	pros::delay(50);
 	move(24,0.2,0.3,0.2);
     pros::delay(500);
 	moveBack(30,0.2,0.3,0.2);
-	turn(90,2.5,0.2,0.01,1,1);
+	turn(90,2,0.2,0.01,1,1);
 	pros::delay(50);
 	move(45,0.2,0.5,0.2);
 }
@@ -44,11 +44,11 @@ void redRightAWP(){
 	pros::delay(1000);
 	RunIntake(212);
 	pros::delay(50);
-	turn(-90,2.5,0.2,0.01,1,1);
+	turn(-90,2,0.2,0.01,1,1);
 	pros::delay(50);
-	move(35,0.1,0.25,0.2);
+	move(35,0.01,0.25,0.2);
 	pros::delay(250);
-	turn(90,2.5,0.2,0.01,9,9);
+	turn(90,2,0.2,0.01,9,9);
 	move(50,0.2,0.3,0.2);
 	pros::delay(50);
 	intake.move_velocity(0);
@@ -66,11 +66,11 @@ void blueLeftAWP(){
 	pros::delay(1000);
 	RunIntake(212);
 	pros::delay(50);
-	turn(90,2.5,0.2,0.01,1,1);
+	turn(90,2,0.2,0.01,1,1);
 	pros::delay(50);
-	move(35,0.1,0.25,0.2);
+	move(35,0.01,0.25,0.2);
 	pros::delay(250);
-	turn(-90,2.5,0.2,0.01,9,9);
+	turn(-90,2,0.2,0.01,9,9);
 	move(50,0.2,0.3,0.2);
 	pros::delay(50);
 	intake.move_velocity(0);
@@ -88,16 +88,16 @@ void RedLeftAWP(){
 	pros::delay(500);
 	RunIntake(212);
 	pros::delay(50);
-	turn(90,2.5,0.2,0.01,1,1);
+	turn(90,2,0.2,0.01,1,1);
 	pros::delay(50);
 	move(38,0.2,0.3,0.2);
 	pros::delay(50);
-	turn(175,2.5,0.2,0.01,9,9);
+	turn(175,2,0.2,0.01,9,9);
 	pros::delay(50);
 	move(24,0.2,0.3,0.2);
     pros::delay(500);
 	moveBack(30,0.2,0.3,0.2);
-	turn(-90,2.5,0.2,0.01,1,1);
+	turn(-90,2,0.2,0.01,1,1);
 	pros::delay(50);
 	move(45,0.2,0.5,0.2);
 }
@@ -114,16 +114,16 @@ void blueSRightAWP(){
 	pros::delay(500);
 	RunIntake(212);
 	pros::delay(50);
-	turn(90,2.5,0.2,0.01,1,1);
+	turn(90,2,0.2,0.01,1,1);
 	pros::delay(50);
 	move(38,0.2,0.3,0.2);
 	pros::delay(50);
-	turn(175,2.5,0.2,0.01,9,9);
+	turn(175,2,0.2,0.01,9,9);
 	pros::delay(50);
 	move(24,0.2,0.3,0.2);
     pros::delay(500);
 	moveBack(30,0.2,0.3,0.2);
-	turn(-90,2.5,0.2,0.01,1,1);
+	turn(-90,2,0.2,0.01,1,1);
 	pros::delay(50);
 	move(45,0.2,0.5,0.2);
 }
@@ -134,17 +134,17 @@ void skills(){
     pros::delay(500);
 	move(3,0.2,0.3,0.2);
 	pros::delay(50);
-    turn(-118,2.5,0.15,0.01,1,1);
+    turn(-100,2,0.015,0.01,1,1);
 	pros::lcd::print(1,"rotated after first turn %f", IMU.get_rotation());
     pros::delay(50);
     moveBack(44,0.2,0.3,0.2);
 	pros::delay(450);
 	clampDown();
 	pros::delay(50);
-	turn(0,2.5,0.15,0.01,1,1);
+	turn(0,2,0.015,0.01,1,1);
 	pros::lcd::print(2,"IMU degrees after %f",IMU.get_rotation());
 	pros::delay(100);
-	move(36,0.2,0.3,0.2);
+	move(45,0.2,0.3,0.2);
 	double lastPosition = intake.get_position(); 
 	if(intake.get_position() < lastPosition+600){
 		intake.move_velocity(-200);
@@ -152,13 +152,13 @@ void skills(){
 		intake.move_velocity(600);
 	}
 	pros::delay(100);
-	turn(90,2.5,0.1,0.01,1,1);
+	turn(90,2,0.01,0.01,1,1);
 	pros::lcd::print(0,"IMU degrees %f",IMU.get_heading());
 	pros::delay(100);
 	move(44,0.2,0.3,0.2);
 	lastPosition = intake.get_position(); 
 	pros::delay(100);
-	turn(25,2.5,0.2,0.01,1,1);
+	turn(25,2,0.015,0.01,1,1);
 	if(intake.get_position() < lastPosition+100){
 		intake.move_velocity(-50);
 		pros::delay(50);
@@ -173,7 +173,7 @@ void skills(){
 		intake.move_velocity(600);
 	}
 	pros::delay(100);
-	moveBack(37,0.2,0.3,0.2);
+	moveBack(33,0.2,0.3,0.2);
 	lastPosition = intake.get_position(); 
 	if(intake.get_position() < lastPosition+100){
 		intake.move_velocity(-200);
@@ -181,7 +181,7 @@ void skills(){
 		intake.move_velocity(600);
 	}
 	pros::delay(50);
-	turn(177,2.5,0.2,0.01,1,1);
+	turn(175,2,0.015,0.01,1,1);
 	pros::delay(100);
 	move(55,0.2,0.3,0.2);
 	if(intake.get_position() < lastPosition+600){
@@ -190,7 +190,7 @@ void skills(){
 		intake.move_velocity(600);
 	}
 	pros::delay(500);
-	turn(60,2.5,0.2,0.01,1,1);
+	turn(60,2,0.015,0.01,1,1);
 	pros::delay(50);
 	move(20,0.2,0.3,0.2);
 	lastPosition = intake.get_position(); 
@@ -200,7 +200,7 @@ void skills(){
 		intake.move_velocity(600);
 	}
 	pros::delay(100);
-	turn(-20,2.5,0.2,0.01,1,1);
+	turn(-20,2,0.015,0.01,1,1);
 	pros::delay(50);
 	moveBack(30,0.2,0.3,0.2);
 	pros::delay(50);
@@ -210,39 +210,39 @@ void skills(){
 	pros::delay(50);
 	move(10,0.2,0.3,0.2);
 	pros::delay(50);
-	turn(89,2.5,0.2,0.01,1,1);
+	turn(90,1.5,0.015,0.01,1,1);
 	pros::delay(50);
-	moveBack(120,0.1,0.1,0);
+	moveBack(120,0.1,0.1,0.2);
 	pros::delay(600);
 	clampDown();
 	pros::delay(50);
 	intake.move_velocity(500);
 	pros::delay(50);
-	turn(0,2.5,0.2,0.01,1,1);
+	turn(0,2,0.2,0.01,1,1);
 	pros::delay(100);
 	move(40,0.2,0.3,0.3);
 	pros::delay(100);
-	turn(-90,2.5,0.2,0.01,1,1);
+	turn(-90,2,0.2,0.01,1,1);
 	pros::lcd::print(0,"IMU degrees %f",IMU.get_heading());
 	pros::delay(100);
 	move(44,0.2,0.3,0.2);
 	pros::delay(100);
-	turn(-27.5,2.5,0.2,0.01,1,1);
+	turn(-27.5,2,0.2,0.01,1,1);
 	pros::delay(100);
 	pros::lcd::print(0,"IMU degrees %f",IMU.get_heading());
 	move(40,0.2,0.3,0.2);
 	pros::delay(100);
 	moveBack(33,0.2,0.3,0.2);
 	pros::delay(50);
-	turn(-177,2.5,0.2,0.01,1,1);
+	turn(-177,2,0.2,0.01,1,1);
 	pros::delay(100);
 	move(55,0.2,0.3,0.2);
 	pros::delay(500);
-	turn(-50,2.5,0.2,0.01,1,1);
+	turn(-50,2,0.2,0.01,1,1);
 	pros::delay(50);
 	move(20,0.2,0.3,0.2);
 	pros::delay(50);
-	turn(30,2.5,0.2,0.01,1,1);
+	turn(30,2,0.2,0.01,1,1);
 	pros::delay(50);
 	moveBack(10,0.2,0.3,0.2);
 	pros::delay(50);
@@ -250,26 +250,26 @@ void skills(){
 	pros::delay(50);
 	move(12,0.2,0.3,0.2);
 	pros::delay(50);
-	turn(46,2.5,0.2,0.01,1,1);
+	turn(46,2,0.2,0.01,1,1);
 	pros::delay(50);
 	intake.move_velocity(0);
-	move(225,0.1,0.7,0.5);
+	move(225,0.01,0.7,0.5);
 	pros::delay(50);
 	intake.move_absolute(60,500);
 	pros::delay(50);
-	turn(135,2.5,0.2,0.01,1,1);
+	turn(135,2,0.2,0.01,1,1);
 	pros::delay(50);
 	moveBack(30,0.2,0.3,0.2);
 	pros::delay(50);
 	clampDown();
 	pros::delay(50);
-	turn(90,2.5,0.2,0.01,1,1);
+	turn(90,2,0.2,0.01,1,1);
 	pros::delay(50);
 	move(75,0.2,0.3,0.2);
 	pros::delay(50);
-	turn(-50,2.5,0.2,0.01,1,1);
+	turn(-50,2,0.2,0.01,1,1);
 	pros::delay(50);
-	turn(-160,2.5,0.2,0.01,1,1);
+	turn(-160,2,0.2,0.01,1,1);
 	pros::delay(50);
 	moveBack(50,0.2,0.3,0.2);
 	pros::delay(50);
@@ -280,8 +280,9 @@ void specialOdomSkills(){
 	pros::delay(2000);
 	XPos = 0;
 	YPos = 0;
-	move(60,0.2,0.3,0.2);
-
+	//turn(0,1,0.01,0.01,1,1);
+	move(24,0.01,0.01,0.01);
+	master.print(0,0, "%f, %f", XPos, YPos);
 	pros::lcd::print(0, "movedTicks %f", RM_MOTOR.get_position());
 
 }

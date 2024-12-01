@@ -94,8 +94,8 @@ void autonomous() {
 			break;
 }*/
 //blueRightAWP();
-//skills();
-specialOdomSkills();
+skills();
+//specialOdomSkills();
 }
 
 /**
@@ -113,7 +113,7 @@ specialOdomSkills();
  */
 void opcontrol() {
 	while(true){
-		master.print(0,1,"YPos %f", YPos);
+		master.print(0,1,"%f, %f", XPos,YPos);
 		pros::lcd::print(0, "IMU %f", IMU.get_rotation());
 		pros::lcd::print(5,"%f,%f", XPos, YPos);
 		pros::delay(50);
