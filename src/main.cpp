@@ -93,8 +93,9 @@ void autonomous() {
 			skills();
 			break;
 }*/
-//skills();
-specialOdomSkills();
+skills();
+//blueSRightAWP();
+//specialOdomSkills();
 }
 
 /**
@@ -119,13 +120,13 @@ Arm.tare_position();
 	bool mode2 = true;
 	bool mode3 = true;
 	while(true){
-	
+		Sweeper();
 		pros::lcd::print(3,"important %f", XPos);
 		master.print(0,0,"Left temp %f", LB_MOTOR.get_temperature());
 		master.print(1,0,"Right temp %f", RB_MOTOR.get_temperature());
 		master.print(2,0,"Intake temp %f", intake.get_temperature());
-		driveFunc(((master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y)*0.75)+(master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y)*0.25)),(master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X)*0.25)+(master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X)*0.75));
-    	moveIntakeSunny();
+		driveFunc(master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y),master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X));
+    	moveIntake();
 		clampTeleOP();
 		moveArm();
 		sigmaFlipOut185();

@@ -19,4 +19,5 @@ void clampTeleOP();
 void sigmaFlipOut185();
 void autonSelector();
 void intake_fn();
+void Sweeper();
 #endif // _PROS_FUNCTIONS_H_

@@ -72,15 +72,18 @@ void clampDown() {
 void clampRelease() {
    clamper.set_value(0);
 }
-
-
-
+bool mode20 = true;
 void driveIntake() {
-   intake.move_velocity(130);
-   if(DSensor.get() <= 148){
-      intake.move_velocity(-50);
-      pros::lcd::print(0, "Sensed");
-      pros::delay(700);
+   if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)&& mode20 == true ){
+      intake.move_velocity(130);
+      if(DSensor.get() <= 148){
+         intake.move_velocity(-50);
+         pros::lcd::print(0, "Sensed");
+         pros::delay(700);
+         mode20 = false;
+      }
+   }else{
+      intake.move_velocity(0);
    }
 }
 void driveIntakeUltimate() {
@@ -108,11 +111,21 @@ void moveIntake(){
 		intake.move_velocity(0);
       speed = 0;
 	}
-   else if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)){
-      while(master.get_digital(pros::E_CONTROLLER_DIGITAL_Y)){
-         intake.move_velocity(50);
-      }
+   else if(speed != 3 && master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)){
+       intake.move_velocity(100);
+       speed = 3;
+       while(speed == 3){
+         driveFunc(master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y),master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X));
+      if(DSensor.get() <= 148){
+         intake.move_velocity(-500);
+         pros::lcd::print(5, "Sensed");
+         pros::delay(100);
+         }
+         if(speed == 3 && master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_Y)){
       intake.move_velocity(0);
+      speed = 0;
+       }
+   }
    }
    else if(speed != 0 && master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2)){
       intake.move_velocity(0);
@@ -120,6 +133,20 @@ void moveIntake(){
    }
    pros::delay(50);
 }
+bool mode30 = 1;
+void Sweeper(){
+   if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)){
+      if(mode30 == true){
+         sweep.set_value(1);
+         mode30 = false;
+      }
+      else{
+         sweep.set_value(0);
+         mode30 = true;
+         }
+   }
+}
+
 void moveIntakeSunny(){
    if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_R2)){
       while(master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)){
