@@ -20,4 +20,5 @@ void sigmaFlipOut185();
 void autonSelector();
 void intake_fn();
 void Sweeper();
+void armState();
 #endif // _PROS_FUNCTIONS_H_

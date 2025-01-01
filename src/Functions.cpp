@@ -220,3 +220,47 @@ void autonSelector(){
     master.clear();
     pros::delay(2000);
 }
+void armState(){
+   Rsensor.set_data_rate(5);
+   if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)){
+      while(Rsensor.get_angle() > 1000){
+         Arm.move_velocity(200);
+         Arm2.move_velocity(200);
+      }
+       Arm.move_velocity(0);
+         Arm2.move_velocity(0);
+         Arm.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+         Arm2.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+   }if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)){
+      if(Rsensor.get_position() < 9000){
+         while(Rsensor.get_position() < 9000){
+            Arm.move_velocity(-50);
+            Arm2.move_velocity(-50);
+            pros::lcd::print(1,"%f", Rsensor.get_angle());
+         }
+         Arm.move_velocity(0);
+         Arm2.move_velocity(0);
+         Arm.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+         Arm2.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+      }
+      else{
+         while(Rsensor.get_position() < 9000){
+            Arm.move_velocity(300);
+            Arm2.move_velocity(300);
+         }
+         Arm.move_velocity(0);
+         Arm2.move_velocity(0);
+         Arm.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+         Arm2.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+      }
+   }if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L1)){
+      while(Rsensor.get_position() < 71000){
+         Arm.move_velocity(-500);
+         Arm2.move_velocity(-500);
+      }
+      Arm.move_velocity(0);
+      Arm2.move_velocity(0);
+      Arm.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+      Arm2.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+   }
+}

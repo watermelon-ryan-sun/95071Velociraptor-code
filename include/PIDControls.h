@@ -18,6 +18,7 @@ void stopMotors();
 void moveRight(double output);
 void moveLeft(double output);
 void moveBack(double distance, double kP, double kI, double kD);
+void moveBackSpeclial(double distance, double kP, double kI, double kD, double targetHead);
 void PIDArm();
 void PIDIntake();
 void putDownArm();

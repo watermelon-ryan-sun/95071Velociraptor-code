@@ -36,6 +36,7 @@ void initialize() {
 	pros::Task OdomCalib(recordPosition);
 	XPos = 0;
 	YPos = 0;
+	Rsensor.set_position(0);
 }
 
 /**
@@ -75,7 +76,6 @@ void competition_initialize() {
  * from where it left off.
  */
 void autonomous() {
-	//pros::Task position_task(intake_fn, (void *)"PROS", TASK_PRIORITY_MAX, TASK_STACK_DEPTH_DEFAULT, "Print X and Y Task");
 	/*switch(autonSelected){
 		case 0:
 			RedLeftAWP();
@@ -93,8 +93,9 @@ void autonomous() {
 			skills();
 			break;
 }*/
-skills();
-//blueSRightAWP();
+//skills();
+//blueRightAWP();
+blueRightSpecial();
 //specialOdomSkills();
 }
 
@@ -120,7 +121,7 @@ Arm.tare_position();
 	bool mode2 = true;
 	bool mode3 = true;
 	while(true){
-		Sweeper();
+		/*Sweeper();
 		pros::lcd::print(3,"important %f", XPos);
 		master.print(0,0,"Left temp %f", LB_MOTOR.get_temperature());
 		master.print(1,0,"Right temp %f", RB_MOTOR.get_temperature());
@@ -129,7 +130,9 @@ Arm.tare_position();
     	moveIntake();
 		clampTeleOP();
 		moveArm();
-		sigmaFlipOut185();
-	    pros::delay(10);
+		sigmaFlipOut185();*/
+		armState();
+	    pros::delay(100);
+		pros::lcd::print(5,"%d", Rsensor.get_position());
 	}
 }

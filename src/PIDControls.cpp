@@ -121,6 +121,53 @@ void move(double distance, double kP, double kI, double kD) {
    }
    stopMotors();//hit the ideal distance so stop yourself
 }
+void moveBackSpeclial(double distance, double kP, double kI, double kD,double targetHead) {
+    tareMotors();
+    double targetHeading = targetHead;
+   double rightOutput = 0.0;
+   double leftOutput = 0.0;
+   distance *= driveTicksPerInch;
+   double target = -distance;
+   double integral = 0.0;
+   double rightMeasured = ((RB_MOTOR.get_position() + RF_MOTOR.get_position() + RM_MOTOR.get_position())/3);
+   double leftMeasured = ((LB_MOTOR.get_position() + LF_MOTOR.get_position() + LM_MOTOR.get_position())/3);
+   double leftVelocity = ((LB_MOTOR.get_actual_velocity() + LF_MOTOR.get_actual_velocity() + LM_MOTOR.get_actual_velocity())/3);
+   double rightVelocity = ((RB_MOTOR.get_actual_velocity() + RF_MOTOR.get_actual_velocity() + RM_MOTOR.get_actual_velocity())/3);//average right velocity in rpms
+   double error = 0.0;//error between the two sides
+   double error2 = 0.0;//error between real velocities and fake velocities
+   double distanceT = 0.0;//area under the curve
+   double distanceT2 = 0.0;//actual position in ticks
+   // TODO: HX comment, the following two lines do not do anything, the value calculated is not assigned back.
+   // They can be removed.
+   rightVelocity * rpmToTps;
+   leftVelocity * rpmToTps;
+   while(target < distanceT2){
+    rightVelocity = rightVelocity * 0.01;//how much time passed since last taking of velocity, then multiply by seconds passed to get ticks traveled
+    leftVelocity = leftVelocity* 0.01;
+    integral = target-distanceT;
+   if(abs(IMU.get_heading()) != targetHeading){
+        error = IMU.get_heading() * (kD/70);
+    }
+    if(integral > 300){
+        integral = 300;
+    }
+    distanceT -= ((rightVelocity + leftVelocity)/2.0);//better way to calculate distance traveled?
+    distanceT2 = -(rightMeasured + leftMeasured)/2.0;
+    rightOutput = ((integral)*kI + (error) - (distanceT-distanceT2)*kP);//missing length left in ticks 
+    leftOutput = ((integral)*kI - (error) - ((distanceT-distanceT2)*kP));
+    pros::lcd::print(0, "before calling moveRight");
+    moveRight(rightOutput);
+    pros::lcd::print(0, "after calling moveRight");
+    moveLeft(leftOutput);
+    pros::lcd::print(0, "right output %f", rightOutput);
+    rightMeasured = -((RB_MOTOR.get_position() + RF_MOTOR.get_position() + RM_MOTOR.get_position())/3);
+    leftMeasured = -((LB_MOTOR.get_position() + LF_MOTOR.get_position() + LM_MOTOR.get_position())/3);
+    leftVelocity = -((LB_MOTOR.get_actual_velocity() + LF_MOTOR.get_actual_velocity() + LM_MOTOR.get_actual_velocity())/3);
+    rightVelocity = -((RB_MOTOR.get_actual_velocity() + RF_MOTOR.get_actual_velocity() + RM_MOTOR.get_actual_velocity())/3);//average right velocity in rpms
+    pros::delay(10);
+   }
+   stopMotors();//hit the ideal distance so stop yourself
+}
 void moveBack(double distance, double kP, double kI, double kD) {
     tareMotors();
     double targetHeading = IMU.get_rotation();
