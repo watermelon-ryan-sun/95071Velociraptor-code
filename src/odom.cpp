@@ -17,6 +17,7 @@ double RMPrevPos = 0, LMPrevPos = 0, BMPrevPos = 0;
 
 void recordPosition(){//repeatdly call
     tareMotors();
+
     double RM_position = 0, LM_position = 0;
     double RM_moved = 0, LM_moved = 0, BM_moved = 0;
     double deltaTheta = 0, halfDeltaTheta = 0;
@@ -55,6 +56,7 @@ void recordPosition(){//repeatdly call
 
         //pros::lcd::print(0,"moved%f, %f, %f", moved, RM_position, LM_position);
         double currentAngle = (90 - IMU.get_rotation()) * M_PI / 180.0;
+        currentAngle = (LM_moved - RM_moved)/(RTrackRadius+LTrackRadius);
         if (currentAngle < 0) {
             currentAngle += 2 * M_PI;
         } else if (currentAngle > 2 * M_PI) {
@@ -75,7 +77,7 @@ void recordPosition(){//repeatdly call
             //Calculate the changes in the X and Y values (INCHES)
             //General equation is:
                 //Distance = 2 * Radius * sin(deltaTheta / 2)
-            //deltaXLocal = 2 * sin(halfDeltaTheta) * ((BM_moved / deltaTheta) + BTrackRadius);
+            deltaXLocal = 2 * sin(halfDeltaTheta) * ((BM_moved / deltaTheta) + BTrackRadius);
             deltaYLocal = 2 * sin(halfDeltaTheta) * ((RM_moved / deltaTheta) + RTrackRadius);
         }
 
