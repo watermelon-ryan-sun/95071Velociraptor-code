@@ -121,7 +121,7 @@ Arm.tare_position();
 	bool mode2 = true;
 	bool mode3 = true;
 	while(true){
-		/*Sweeper();
+		Sweeper();
 		pros::lcd::print(3,"important %f", XPos);
 		master.print(0,0,"Left temp %f", LB_MOTOR.get_temperature());
 		master.print(1,0,"Right temp %f", RB_MOTOR.get_temperature());
@@ -130,9 +130,9 @@ Arm.tare_position();
     	moveIntake();
 		clampTeleOP();
 		moveArm();
-		sigmaFlipOut185();*/
+		sigmaFlipOut185();
 		armState();
-	    pros::delay(100);
+	    pros::delay(10);
 		pros::lcd::print(5,"%d", Rsensor.get_position());
 	}
 }
