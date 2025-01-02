@@ -112,6 +112,7 @@ skills();
  * task, not resume it from where it left off.
  */
 void opcontrol() {
+	move(24,0.2,0.3,0.2);
 	while(true){
 		master.print(0,1,"%f, %f", XPos,YPos);
 		pros::lcd::print(0, "IMU %f", IMU.get_rotation());
@@ -136,6 +137,6 @@ Arm.tare_position();
 		clampTeleOP();
 		moveArm();
 		sigmaFlipOut185();
-	    pros::delay(10);
+	    pros::delay(1000);
 	}
 }
