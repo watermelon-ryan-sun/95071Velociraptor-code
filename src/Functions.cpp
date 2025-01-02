@@ -221,11 +221,11 @@ void autonSelector(){
     pros::delay(2000);
 }
 void armState(){
-   Rsensor.set_data_rate(5);
    if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2)){
-      while(Rsensor.get_angle() > 1000){
-         Arm.move_velocity(200);
-         Arm2.move_velocity(200);
+      while(Rsensor.get_position() > 1000){
+         Arm.move_velocity(400);
+         Arm2.move_velocity(400);
+         driveFunc(master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y),master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X));
       }
        Arm.move_velocity(0);
          Arm2.move_velocity(0);
@@ -236,6 +236,7 @@ void armState(){
          while(Rsensor.get_position() < 9000){
             Arm.move_velocity(-50);
             Arm2.move_velocity(-50);
+            driveFunc(master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y),master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X));
             pros::lcd::print(1,"%f", Rsensor.get_angle());
          }
          Arm.move_velocity(0);
@@ -244,9 +245,10 @@ void armState(){
          Arm2.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
       }
       else{
-         while(Rsensor.get_position() < 9000){
+         while(Rsensor.get_position() > 9000){
             Arm.move_velocity(300);
             Arm2.move_velocity(300);
+            driveFunc(master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y),master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X));
          }
          Arm.move_velocity(0);
          Arm2.move_velocity(0);
@@ -257,6 +259,7 @@ void armState(){
       while(Rsensor.get_position() < 71000){
          Arm.move_velocity(-500);
          Arm2.move_velocity(-500);
+         driveFunc(master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y),master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X));
       }
       Arm.move_velocity(0);
       Arm2.move_velocity(0);

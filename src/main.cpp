@@ -37,6 +37,7 @@ void initialize() {
 	XPos = 0;
 	YPos = 0;
 	Rsensor.set_position(0);
+	Rsensor.set_data_rate(5);
 }
 
 /**
