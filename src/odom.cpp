@@ -33,7 +33,7 @@ void recordPosition(){//repeatdly call
     double deltaYGlobal = 0;
     pros::delay(2000);
     while(true){
-        pros::delay(10000);
+        pros::delay(10);
         if ((deltaXGlobal == std::nan("")) || (deltaYGlobal == std::nan(""))) {
              //pros::lcd::print(0,"threading%f, %f",cos(currenttheta), moved);
              pros::delay(50);
@@ -92,7 +92,7 @@ void recordPosition(){//repeatdly call
 
         pros::lcd::print(3,"%f, %f, %f", deltaTheta,RM_moved, LM_moved);
         pros::lcd::print(4,"%f",avgThetaForArc);
-        pros::delay(600000);
+        pros::delay(60);
         //master.print(2,3,"important %f", YPos);
     }
 }

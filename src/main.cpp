@@ -94,7 +94,9 @@ void autonomous() {
 			break;
 }*/
 //blueRightAWP();
-skills();
+skills2();
+//move(60,0.2,0.3,0.2);
+//skills();
 //specialOdomSkills();
 }
 
@@ -112,12 +114,11 @@ skills();
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-	move(24,0.2,0.3,0.2);
 	while(true){
 		master.print(0,1,"%f, %f", XPos,YPos);
 		pros::lcd::print(0, "IMU %f", IMU.get_rotation());
 		pros::lcd::print(5,"%f,%f", XPos, YPos);
-		pros::delay(50);
+		pros::delay(500);
 	}
 bool drive = false;
 clampmode = true;

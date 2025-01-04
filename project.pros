@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "Odoom",
+    "project_name": "Odom",
     "target": "v5",
     "templates": {
       "kernel": {

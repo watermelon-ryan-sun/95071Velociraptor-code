@@ -7,4 +7,5 @@ void blueLeftAWP();
 void blueSRightAWP();
 void skills();
 void specialOdomSkills();
+void skills2();
 #endif
