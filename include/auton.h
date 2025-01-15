@@ -10,4 +10,5 @@ void specialOdomSkills();
 void RedSLeftAWP();
 void RedLeftSpecial();
 void blueRightSpecial();
+void skills2();
 #endif
