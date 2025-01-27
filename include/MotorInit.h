@@ -22,6 +22,6 @@ static pros::Rotation Rsensor(1,false);
 static pros::Motor intake(8, pros::E_MOTOR_GEAR_GREEN, false);
 static pros::Motor Arm(16, pros::E_MOTOR_GEAR_RED, false);
 static pros::ADIDigitalOut flipOut('B');//flipout for arm, 
-static pros::Rotation Odometry(5);
+static pros::Rotation Odometry(2,false);
 static pros::Distance DSensor(6);
 #endif // _PROS_MORTORINIT_H_

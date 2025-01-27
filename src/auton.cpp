@@ -360,12 +360,15 @@ void skills2(){
 	move(10,0.2,0.3,0.2);*/
 }
 void specialOdomSkills(){
-	pros::delay(2000);
+	pros::delay(4000);
 	XPos = 0;
 	YPos = 0;
 	//turn(0,1,0.01,0.01,1,1);
-	move(24,0.01,0.01,0.01);
+	//move(24,0.2,0.3,0.2);
+	//pros::delay(50);
+	turn(90,2.5,0.2,0.1,1,1);
+	//pros::delay(50);
+	//move(24,0.2,0.3,0.2);
 	master.print(0,0, "%f, %f", XPos, YPos);
-	pros::lcd::print(0, "movedTicks %f", RM_MOTOR.get_position());
 
 }

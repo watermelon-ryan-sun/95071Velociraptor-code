@@ -94,7 +94,8 @@ void autonomous() {
 			break;
 }*/
 //blueRightAWP();
-skills2();
+specialOdomSkills();
+//skills2();
 //move(60,0.2,0.3,0.2);
 //skills();
 //specialOdomSkills();
@@ -114,30 +115,13 @@ skills2();
  * task, not resume it from where it left off.
  */
 void opcontrol() {
+	Odometry.set_position(0);
+	specialOdomSkills();
 	while(true){
-		master.print(0,1,"%f, %f", XPos,YPos);
-		pros::lcd::print(0, "IMU %f", IMU.get_rotation());
-		pros::lcd::print(5,"%f,%f", XPos, YPos);
-		pros::delay(500);
-	}
-bool drive = false;
-clampmode = true;
-Arm.tare_position();
-	intake.tare_position();
-	bool mode = false;
-	bool mode2 = true;
-	bool mode3 = true;
-	while(true){
-	
-		pros::lcd::print(3,"important %f", XPos);
-		master.print(0,0,"Left temp %f", LB_MOTOR.get_temperature());
-		master.print(1,0,"Right temp %f", RB_MOTOR.get_temperature());
-		master.print(2,0,"Intake temp %f", intake.get_temperature());
-		driveFunc(((master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y)*0.75)+(master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y)*0.25)),(master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X)*0.25)+(master.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X)*0.75));
-    	moveIntakeSunny();
-		clampTeleOP();
-		moveArm();
-		sigmaFlipOut185();
-	    pros::delay(1000);
+		pros::lcd::print(0,"XPos %f", XPos);
+	pros::lcd::print(1,"YPos %f", YPos);
+	pros::lcd::print(2, "currentAngle %f", IMU.get_heading());
+	pros::lcd::print(3,"BM%d, RM%f", Odometry.get_position(), RM_MOTOR.get_position());
+	pros::delay(500);
 	}
 }
