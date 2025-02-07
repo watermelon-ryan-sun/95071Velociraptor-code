@@ -36,6 +36,7 @@ void initialize() {
 	pros::Task OdomCalib(recordPosition);
 	XPos = 0;
 	YPos = 0;
+	avgThetaForArc = 0;
 }
 
 /**
@@ -118,10 +119,13 @@ void opcontrol() {
 	Odometry.set_position(0);
 	specialOdomSkills();
 	while(true){
+		driveFunc(master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X));
 		pros::lcd::print(0,"XPos %f", XPos);
 	pros::lcd::print(1,"YPos %f", YPos);
 	pros::lcd::print(2, "currentAngle %f", IMU.get_heading());
 	pros::lcd::print(3,"BM%d, RM%f", Odometry.get_position(), RM_MOTOR.get_position());
+	pros::lcd::print(4,"avgThetaForArc:%f", avgThetaForArc);
+	//pros::lcd::print(5,"XGlobal %f", deltaXGlobal);
 	pros::delay(500);
 	}
 }

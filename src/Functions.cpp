@@ -193,3 +193,13 @@ void autonSelector(){
     master.clear();
     pros::delay(2000);
 }
+void AButton(){
+   bool Abuttonmode = true;
+   if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)&& Abuttonmode == true){
+      Abutton.set_value(1);
+   }
+   else if(master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A)&& Abuttonmode == false){
+      Abutton.set_value(0);
+   }
+
+}

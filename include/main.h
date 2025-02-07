@@ -64,8 +64,12 @@ extern "C" {
 #endif
 extern volatile double XPos;
 extern volatile double YPos;
+extern volatile double avgThetaForArc;
+extern volatile double deltaTheta;
 extern volatile double currentAngle;  // current heading in radians
 extern volatile double prevAngle;
+extern volatile double deltaXGlobal;
+extern volatile double deltaYLocal;
 
 void autonomous(void);
 void initialize(void);
