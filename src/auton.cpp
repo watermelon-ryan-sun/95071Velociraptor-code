@@ -362,13 +362,14 @@ void specialOdomSkills(){
 	pros::delay(4000);
 	XPos = 0;
 	YPos = 0;
-	turn(-113,2.5,0.2,0.1,1,1);
-	pros::delay(5);
-	moveBack(28,5,2,3);
+	IMU.set_heading(180);
 	pros::delay(50);
-	turn(0,2.5,0.2,0.1,1,1);
-	pros::delay(5);
-	move(24,36,5,2,3);
+	moveBack(30,5,2,3);
+	pros::delay(50);
+	clampDown();
+	turn(328,2.5,0.2,0.1,1,1);
+	pros::delay(50);
+	move(-24,60,1,2,3);
 	master.print(0,0, "%f, %f", XPos, YPos);
 
 }

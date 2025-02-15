@@ -14,7 +14,7 @@ void turn(double heading, double Kp, double Kd, double Ki, double O, double U) {
 double prevX = XPos;
 double prevY = YPos;
 
-double error = heading-IMU.get_rotation();
+double error = heading-IMU.get_heading();
 error *= O;
 error /= U;
     if(fabs(error) > 180){
@@ -25,7 +25,7 @@ error /= U;
     double integral = 0;
     double threshold = 20;
     while(true){
-        error = heading - IMU.get_rotation();
+        error = heading - IMU.get_heading();
         integral += error;
         if(fabs(error)>threshold){
             integral = 0;
@@ -149,7 +149,7 @@ void move(double targetX, double targetY, double kP, double kI, double kD) {
    double currentHeading = (IMU.get_heading()* M_PI)/180;
    // TODO: HX comment, the following two lines do not do anything, the value calculated is not assigned back.
    // They can be removed.
-   while(targetR > rightMeasured || targetL > leftMeasured){
+   while(targetR - rightMeasured < 1.0 || targetL - leftMeasured < 1.0){
     integralR = (targetR - OPR)/driveTicksPerInch;
     integralL = (targetL - OPL)/driveTicksPerInch;
     if(integralR > 300){
@@ -166,27 +166,6 @@ void move(double targetX, double targetY, double kP, double kI, double kD) {
 }
 stopMotors();
 }
-void moveToPosition(double targetX, double targetY, double kP, double kI, double kD){
-    double leftVoltage = 0;
-    double rightVoltage = 0;
-    double targetTheta = 0;
-    double realTheta = 0;
-    double distX = targetX - XPos;
-    double distY = targetY - YPos;
-    while(targetX-XPos > 1 && (targetY-YPos > 1)){
-        targetTheta = atan((targetY-YPos)/(targetX-XPos));
-        realTheta = IMU.get_heading() * M_PI/180;
-        if(realTheta > targetTheta){
-            //cut the leftVoltage
-            leftVoltage = realTheta - targetTheta;
-            rightVoltage = targetTheta-realTheta;//figure out a relationship between the two quickly, ideas: find velocity and then diff between velocities to do something
-        }
-        RM_MOTOR.move_voltage(rightVoltage);
-        LM_MOTOR.move_voltage(leftVoltage);
-        pros::delay(50);
-    }
-
-}
 void moveBack(double distance, double kP, double kI, double kD) {
     double OPL = ((LB_MOTOR.get_position() + LF_MOTOR.get_position() + LM_MOTOR.get_position())/3);
     double OPR = ((RB_MOTOR.get_position() + RF_MOTOR.get_position() + RM_MOTOR.get_position())/3);
@@ -200,23 +179,22 @@ void moveBack(double distance, double kP, double kI, double kD) {
    double rightMeasured = OPR;
    double leftMeasured = OPL;
    double error = 0.0;//error between the two sides
-   double distanceT = 0.0;//area under the curve
    double integralR = 0.0;
    double integralL = 0.0;
 
    // TODO: HX comment, the following two lines do not do anything, the value calculated is not assigned back.
    // They can be removed.
    while(targetR < rightMeasured || targetL < leftMeasured){
-    integralR = -(OPR - targetR)/driveTicksPerInch;
-    integralL = -(OPL - targetR)/driveTicksPerInch;
+    integralR = (OPR - targetR)/driveTicksPerInch;
+    integralL = (OPL - targetR)/driveTicksPerInch;
     if(integralR > 300){
         integralL  = 300;
     }
     if(integralL > 300){
         integralL = 300;
     }
-    moveRight((integralR*kI) - targetInches * kP);
-    moveLeft((integralL*kI) - targetInches*kP);
+    moveRight(-(integralR*kI) - targetInches * kP);
+    moveLeft(-(integralL*kI) - targetInches * kP);
     leftMeasured = ((LB_MOTOR.get_position() + LF_MOTOR.get_position() + LM_MOTOR.get_position())/3);
     rightMeasured = ((RB_MOTOR.get_position() + RF_MOTOR.get_position() + RM_MOTOR.get_position())/3);
 }

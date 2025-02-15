@@ -23,7 +23,6 @@ void recordPosition(){//repeatdly call
     Odometry.set_position(0);
     Odometry.set_data_rate(5);
     tareMotors();
-    IMU.set_heading(0);
     pros::delay(3000);
     double RM_position = 0, LM_position = 0;
     double RM_moved = 0, LM_moved = 0, BM_moved = 0;
