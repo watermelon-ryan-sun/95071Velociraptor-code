@@ -149,7 +149,7 @@ void move(double targetX, double targetY, double kP, double kI, double kD) {
    double currentHeading = (IMU.get_heading()* M_PI)/180;
    // TODO: HX comment, the following two lines do not do anything, the value calculated is not assigned back.
    // They can be removed.
-   while(targetR - rightMeasured < 1.0 || targetL - leftMeasured < 1.0){
+   while(targetR > rightMeasured || targetL > leftMeasured){
     integralR = (targetR - OPR)/driveTicksPerInch;
     integralL = (targetL - OPL)/driveTicksPerInch;
     if(integralR > 300){

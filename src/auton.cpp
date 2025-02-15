@@ -364,12 +364,24 @@ void specialOdomSkills(){
 	YPos = 0;
 	IMU.set_heading(180);
 	pros::delay(50);
-	moveBack(30,5,2,3);
+	moveBack(30,5,5,3);
 	pros::delay(50);
 	clampDown();
 	turn(328,2.5,0.2,0.1,1,1);
+	intake.move_velocity(500);
 	pros::delay(50);
-	move(-24,60,1,2,3);
+	move(-24,65,2,2,5);
+	pros::delay(50);
+	turn(170,2.5,0.2,0.1,1,1);
+	pros::delay(50);
+	move(-24,36,2,5,3);
 	master.print(0,0, "%f, %f", XPos, YPos);
 
+}
+void OdomRush(){
+	IMU.set_heading(0);
+	moveBack(48,7,3,1);
+	pros::delay(50);
+	clampDown();
+	move();
 }
