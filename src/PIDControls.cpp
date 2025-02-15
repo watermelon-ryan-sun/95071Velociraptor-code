@@ -127,13 +127,16 @@ void move2(double targetX, double targetY,double targetTheta,double kP, double k
    }
    stopMotors();//hit the ideal distance so stop yourself
 }
-void move(double distance, double kP, double kI, double kD) {
+void move(double targetX, double targetY, double kP, double kI, double kD) {
     double OPL = ((LB_MOTOR.get_position() + LF_MOTOR.get_position() + LM_MOTOR.get_position())/3);
     double OPR = ((RB_MOTOR.get_position() + RF_MOTOR.get_position() + RM_MOTOR.get_position())/3);
    double rightOutput = 0.0;
    double leftOutput = 0.0;
+   double XDiff = targetX - XPos;
+   double YDiff = targetY-YPos;
+   double distance = sqrt((XDiff*XDiff) + (YDiff*YDiff));
+   double targetInches = distance;
    distance *= driveTicksPerInch;
-
    double targetR = distance + OPR;
    double targetL = distance + OPL;
    double rightMeasured = OPR;
@@ -142,29 +145,34 @@ void move(double distance, double kP, double kI, double kD) {
    double distanceT = 0.0;//area under the curve
    double integralR = 0.0;
    double integralL = 0.0;
-   double targetHeading = IMU.get_rotation();
+   double targetHeading = atan(XDiff/YDiff);
+   double currentHeading = (IMU.get_heading()* M_PI)/180;
    // TODO: HX comment, the following two lines do not do anything, the value calculated is not assigned back.
    // They can be removed.
    while(targetR > rightMeasured || targetL > leftMeasured){
     integralR = (targetR - OPR)/driveTicksPerInch;
     integralL = (targetL - OPL)/driveTicksPerInch;
-    if(integralR > 60){
-        integralL  = 60;
+    if(integralR > 300){
+        integralL  = 300;
     }
-    if(integralL > 60){
-        integralL = 60;
+    if(integralL > 300){
+        integralL = 300;
     }
-    moveRight((integralR*kI) + (targetR * kP));
-    moveLeft((integralL*kI) + (targetL * kP));
+    currentHeading = (IMU.get_heading()* M_PI)/180;
+    moveRight((integralR*kI) + targetInches * kP - (targetHeading - currentHeading) * kD);
+    moveLeft((integralL*kI) + targetInches*kP + (targetHeading - currentHeading) * kD);
     leftMeasured = ((LB_MOTOR.get_position() + LF_MOTOR.get_position() + LM_MOTOR.get_position())/3);
     rightMeasured =((RB_MOTOR.get_position() + RF_MOTOR.get_position() + RM_MOTOR.get_position())/3);
 }
+stopMotors();
 }
 void moveToPosition(double targetX, double targetY, double kP, double kI, double kD){
     double leftVoltage = 0;
     double rightVoltage = 0;
     double targetTheta = 0;
     double realTheta = 0;
+    double distX = targetX - XPos;
+    double distY = targetY - YPos;
     while(targetX-XPos > 1 && (targetY-YPos > 1)){
         targetTheta = atan((targetY-YPos)/(targetX-XPos));
         realTheta = IMU.get_heading() * M_PI/180;
@@ -177,50 +185,42 @@ void moveToPosition(double targetX, double targetY, double kP, double kI, double
         LM_MOTOR.move_voltage(leftVoltage);
         pros::delay(50);
     }
+
 }
 void moveBack(double distance, double kP, double kI, double kD) {
-    tareMotors();
-    double targetHeading = IMU.get_rotation();
+    double OPL = ((LB_MOTOR.get_position() + LF_MOTOR.get_position() + LM_MOTOR.get_position())/3);
+    double OPR = ((RB_MOTOR.get_position() + RF_MOTOR.get_position() + RM_MOTOR.get_position())/3);
    double rightOutput = 0.0;
    double leftOutput = 0.0;
+
+   double targetInches = distance;
    distance *= driveTicksPerInch;
-   double target = -distance;
-   double integral = 0.0;
-   double rightMeasured = ((RB_MOTOR.get_position() + RF_MOTOR.get_position() + RM_MOTOR.get_position())/3);
-   double leftMeasured = ((LB_MOTOR.get_position() + LF_MOTOR.get_position() + LM_MOTOR.get_position())/3);
-   double leftVelocity = ((LB_MOTOR.get_actual_velocity() + LF_MOTOR.get_actual_velocity() + LM_MOTOR.get_actual_velocity())/3);
-   double rightVelocity = ((RB_MOTOR.get_actual_velocity() + RF_MOTOR.get_actual_velocity() + RM_MOTOR.get_actual_velocity())/3);//average right velocity in rpms
+   double targetR = OPR - distance;
+   double targetL = OPL - distance;
+   double rightMeasured = OPR;
+   double leftMeasured = OPL;
    double error = 0.0;//error between the two sides
-   double error2 = 0.0;//error between real velocities and fake velocities
    double distanceT = 0.0;//area under the curve
-   double distanceT2 = 0.0;//actual position in ticks
+   double integralR = 0.0;
+   double integralL = 0.0;
+
    // TODO: HX comment, the following two lines do not do anything, the value calculated is not assigned back.
    // They can be removed.
-   rightVelocity * rpmToTps;
-   leftVelocity * rpmToTps;
-   while(target < distanceT2){
-    rightVelocity = rightVelocity * 0.01;//how much time passed since last taking of velocity, then multiply by seconds passed to get ticks traveled
-    leftVelocity = leftVelocity* 0.01;
-    integral = target-distanceT;
-   if(abs(IMU.get_heading()) != targetHeading){
-        error = IMU.get_heading() * (kD/70);
+   while(targetR < rightMeasured || targetL < leftMeasured){
+    integralR = -(OPR - targetR)/driveTicksPerInch;
+    integralL = -(OPL - targetR)/driveTicksPerInch;
+    if(integralR > 300){
+        integralL  = 300;
     }
-    if(integral > 300){
-        integral = 300;
+    if(integralL > 300){
+        integralL = 300;
     }
-    distanceT -= ((rightVelocity + leftVelocity)/2.0);//better way to calculate distance traveled?
-    distanceT2 = -(rightMeasured + leftMeasured)/2.0;
-    rightOutput = ((integral)*kI + (error) - (distanceT-distanceT2)*kP);//missing length left in ticks 
-    leftOutput = ((integral)*kI - (error) - ((distanceT-distanceT2)*kP));
-    moveRight(rightOutput);
-    moveLeft(leftOutput);
-    rightMeasured = -((RB_MOTOR.get_position() + RF_MOTOR.get_position() + RM_MOTOR.get_position())/3);
-    leftMeasured = -((LB_MOTOR.get_position() + LF_MOTOR.get_position() + LM_MOTOR.get_position())/3);
-    leftVelocity = -((LB_MOTOR.get_actual_velocity() + LF_MOTOR.get_actual_velocity() + LM_MOTOR.get_actual_velocity())/3);
-    rightVelocity = -((RB_MOTOR.get_actual_velocity() + RF_MOTOR.get_actual_velocity() + RM_MOTOR.get_actual_velocity())/3);//average right velocity in rpms
-    pros::delay(5);
-   }
-   stopMotors();//hit the ideal distance so stop yourself
+    moveRight((integralR*kI) - targetInches * kP);
+    moveLeft((integralL*kI) - targetInches*kP);
+    leftMeasured = ((LB_MOTOR.get_position() + LF_MOTOR.get_position() + LM_MOTOR.get_position())/3);
+    rightMeasured = ((RB_MOTOR.get_position() + RF_MOTOR.get_position() + RM_MOTOR.get_position())/3);
+}
+stopMotors();
 }
 /*void move2(double distance,double kP, double kI, double kD) {
   double error = (distance *= driveTicksPerInch);

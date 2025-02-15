@@ -3,7 +3,7 @@
 #include "main.h"
 #include "MotorInit.h"
 #include "odom.h"
-void blueRightAWP(){
+/*void blueRightAWP(){
 	IMU.set_rotation(0);
     Arm.tare_position();
 	intake.tare_position();
@@ -358,23 +358,17 @@ void skills2(){
 	pros::delay(50);
 	clampRelease();
 	move(10,0.2,0.3,0.2);*/
-}
 void specialOdomSkills(){
 	pros::delay(4000);
 	XPos = 0;
 	YPos = 0;
-	//turn(0,1,0.01,0.01,1,1);
-	move(72,0.6,0.9,0.2);
-	//pros::delay(50);
-	turn(90,2.5,0.2,0.1,1,1);
-	move(24,0.2,0.3,0.2);
-	//pros::lcd::print(0,"YPos %f", XPos);
-	//pros::lcd::print(1,"YPos %f", YPos);
-	//pros::lcd::print(2, "currentAngle %f", IMU.get_heading());
-	//pros::lcd::print(3,"BM%d, RM%f", Odometry.get_position(), RM_MOTOR.get_position());
-	//pros::lcd::print(4,"avgThetaForArc:%f", avgThetaForArc);
-	//move(24,0.2,0.3,0.2);
-	//move(3,0.1,0.1,0.1);
+	turn(-113,2.5,0.2,0.1,1,1);
+	pros::delay(5);
+	moveBack(28,5,2,3);
+	pros::delay(50);
+	turn(0,2.5,0.2,0.1,1,1);
+	pros::delay(5);
+	move(24,36,5,2,3);
 	master.print(0,0, "%f, %f", XPos, YPos);
 
 }

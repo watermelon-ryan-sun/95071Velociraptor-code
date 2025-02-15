@@ -114,7 +114,6 @@ void recordPosition(){//repeatdly call
 
         //pros::lcd::print(3,"%f, %f, %f", deltaTheta,RM_moved, LM_moved);
         //pros::lcd::print(4,"%f",avgThetaForArc);
-        pros::delay(5);
         //master.print(2,3,"important %f", YPos);
     }
 }
@@ -199,56 +198,3 @@ void recordPosition2(){
     }
 }
 */
-
-void movePosition(double targetX, double targetY, bool faceBack){
-    double targetTheta;
-    double targetDistance;
-
-    if(faceBack == true){
-        //while(abs(targetX - XPos) > 0.1 && abs(targetY - YPos) > 0.1){
-            targetTheta = 180 * atan((targetY-YPos)/(targetX-XPos))/M_PI;
-            targetDistance = sqrt(((targetX-XPos)*(targetX-XPos)) + ((targetY-YPos)*(targetY-YPos)));
-            pros::lcd::print(0,"target Theta/dist %f, %f", targetTheta, targetDistance);
-            turn(targetTheta-180, 2.5,0.2,0.1,1,1);
-            pros::delay(50);
-            moveBack(targetDistance,0.1,0.1,0.1);
-            pros::delay(50);
-        //}
-    }
-    else{
-        //pros::lcd::print(1,"target Theta/dist %f, %f", targetX, YPos);
-        //pros::lcd::print(0,"target Theta/dist1 %f, %f", targetY, XPos);
-        //while(abs(targetY - YPos) > 12 || abs(targetX - XPos) > 12){
-        if(targetX == XPos){
-            targetTheta = 90;
-        }
-        else{
-            if(targetX - XPos > 0 && targetY - YPos > 0){
-                targetTheta = 180 * atan((targetY-YPos)/(targetX-XPos))/M_PI;
-            }
-            else if(targetX - XPos < 0 && targetY - YPos > 0){
-                targetTheta = ((90 - (180 * atan((targetY-YPos)/(targetX-XPos)))/M_PI));
-            }
-            else if(targetX - XPos < 0 && targetY - YPos < 0){
-                targetTheta = ( 180 - 180 * atan((targetY-YPos)/(targetX-XPos))/M_PI);
-            }
-            else if(targetX - XPos > 0 && targetY - YPos < 0){
-                targetTheta = ( 270 - 180* atan((targetY-YPos)/(targetX-XPos))/M_PI);
-            }
-            }
-        turn(targetTheta, 2.5,0.2,0.1,1,1);
-        pros::delay(10);
-        targetDistance = sqrt(((targetX-XPos)*(targetX-XPos)) + ((targetY-YPos)*(targetY-YPos)));
-        move(targetDistance,0.2, 0.1,0.2);
-        pros::delay(100);
-        master.print(2,3,"%f, %f ,%f", targetDistance, YPos, IMU.get_rotation());
-        pros::lcd::print(5,"%f,%f,%f", XPos, YPos, targetTheta);
-        //master.print(3,3," %f", IMU.get_heading());
-        //}
-
-    }
-}
-void testThread(){
-    pros::lcd::print(0,"Thread Called");
-    pros::delay(50);
-}
