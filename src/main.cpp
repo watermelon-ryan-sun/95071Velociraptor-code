@@ -34,9 +34,9 @@ void initialize() {
 	pros::lcd::register_btn1_cb(on_center_button);	
 	//autonSelector();
 	pros::Task OdomCalib(recordPosition);
-	XPos = 0;
-	YPos = 0;
-	avgThetaForArc = 0;
+	//XPos = 0;
+	//YPos = 0;
+	//avgThetaForArc = 0;
 }
 
 /**
@@ -116,8 +116,6 @@ specialOdomSkills();
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-	Odometry.set_position(0);
-	specialOdomSkills();
 	while(true){
 		driveFunc(master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), master.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_X));
 		pros::lcd::print(0,"XPos %f", XPos);

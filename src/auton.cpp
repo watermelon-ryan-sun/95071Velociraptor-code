@@ -359,29 +359,102 @@ void skills2(){
 	clampRelease();
 	move(10,0.2,0.3,0.2);*/
 void specialOdomSkills(){
-	pros::delay(4000);
+	pros::delay(2000);
 	XPos = 0;
 	YPos = 0;
-	IMU.set_heading(180);
+	//turn(245,2.5,0.2,0.1,1,1);
+	turn(-115,2.5,0.2,0.1,1,1);
 	pros::delay(50);
-	moveBack(30,5,5,3);
+	moveBack(20,9,2,1);
 	pros::delay(50);
-	clampDown();
-	turn(328,2.5,0.2,0.1,1,1);
-	intake.move_velocity(500);
+	/*clampDown();
 	pros::delay(50);
-	move(-24,65,2,2,5);
+	RunIntake();*/
+	turn(0,2.5,0.2,0.1,1,1);
 	pros::delay(50);
-	turn(170,2.5,0.2,0.1,1,1);
-	pros::delay(50);
-	move(-24,36,2,5,3);
 	master.print(0,0, "%f, %f", XPos, YPos);
-
-}
-void OdomRush(){
-	IMU.set_heading(0);
-	moveBack(48,7,3,1);
+	move(24,29,4,6,12);
 	pros::delay(50);
-	clampDown();
-	move();
+	turn(90,2.5,0.2,0.1,1,1);
+	pros::delay(50);
+	move(34,48,5,4,13);
+	pros::delay(50);
+	turn(30,2.5,0.2,0.1,1,1);
+	pros::delay(50);
+	move(52,50,5,7,13);
+	pros::delay(50);
+	moveBack(24,5,6,1);
+	pros::delay(50);
+	turn(180,2.5,0.2,0.1,1,1);
+	pros::delay(50);
+	move(48,0,5,7,9);
+	pros::delay(50);
+	moveBack(24,5,5,1);
+	pros::delay(50);
+	move(50,12,5,5,20);
+	pros::delay(50);
+	turn(330,2.5,0.2,0.1,1,1);
+	pros::delay(50);
+	moveBack(5,20,5,1);
+	pros::delay(50);
+	turn(95,2.5,0.2,0.1,1,1);
+	pros::delay(50);
+	moveBack(76,3,5,1);
+	pros::delay(50);
+	master.print(0,0, "%f, %f", XPos, YPos);
+	turn(0,2.5,0.2,0.1,1,1);
+	pros::delay(50);
+	move(-24,36,5,8,8);
+	pros::delay(50);
+	turn(-90,2.5,0.2,0.1,1,1);
+	pros::delay(50);
+	move(-48,36,5,8,8);
+	pros::delay(50);
+	turn(-45,2.5,0.2,0.3,1,1);
+	pros::delay(50);
+	move(-52,50,10,5,0);
+	pros::delay(50);
+	turn(180,2.5,0.2,0.1,1,1);
+	pros::delay(50);
+	move(-48,0,5,4,12);
+	pros::delay(50);
+	turn(-45,2.5,0.2,0.1,1,1);
+	pros::delay(50);
+	move(-50,6,5,3,4);
+	pros::delay(50);
+	moveBack(12,5,9,1);
+	pros::delay(50);
+	turn(0,2.5,0.2,0.1,1,1);
+	pros::delay(50);
+	move(-48,78,5,8,6);
+	pros::delay(50);
+	turn(-135,2.5,0.2,0.1,1,1);
+	pros::delay(50);
+	moveBack(36,5,5,1);
+	pros::delay(50);
+
+	while(true){
+	master.print(0,0, "%f, %f", XPos, YPos);
+	pros::delay(500);
+	}
+	/*pros::delay(50);
+	move(-48,36,5,8,13);
+	pros::delay(50);
+	turn(-30,2.5,0.2,0.1,1,1);
+	pros::delay(50);
+	move(-52,48,5,9,13);
+	while(true){
+	master.print(0,0, "%f, %f", XPos, YPos);
+	pros::delay(500);
+	}
+	/*pros::delay(50);
+	turn(-90,2.5,0.2,0.1,1,1);
+	pros::delay(50);
+	move(-48,36,5,8,13);
+	pros::delay(50);
+	turn(-30,2.5,0.2,0.1,1,1);
+	pros::delay(50);
+	move(-52,48,5,9,13);
+	master.print(0,0, "%f, %f", XPos, YPos);*/
+
 }

@@ -21,21 +21,20 @@ double RMPrevPos = 0, LMPrevPos = 0, BMPrevPos = 0;
 
 void recordPosition(){//repeatdly call
     Odometry.set_position(0);
-    Odometry.set_data_rate(5);
-    tareMotors();
-    pros::delay(100);
+    Odometry.set_data_rate(11);
     double RM_position = 0, LM_position = 0;
     double RM_moved = 0, LM_moved = 0, BM_moved = 0;
     double halfDeltaTheta = 0;
     //double avgThetaForArc = 0;
-    RM_MOTOR.tare_position();
-    LM_MOTOR.tare_position();
     //The changes in the X and Y positions (INCHES)
     double deltaXLocal = deltaXLocal;
 
     //The X and Y offsets converted from their local forms (INCHES)
     double deltaYGlobal = 0;
-    int nanCount = 0;
+    pros::delay(2000);
+    while(IMU.is_calibrating()){
+        pros::delay(50);
+    }
     while(true){
         /*
         if (abs(deltaXGlobal == std::nan("")) || abs(deltaYGlobal == std::nan(""))) {
@@ -57,22 +56,11 @@ void recordPosition(){//repeatdly call
         RMPrevPos = RM_position;
         LMPrevPos = LM_position;
         BMPrevPos = BM_position;
-    
         double currentAngle = IMU.get_heading() * M_PI / 180.0;
-        if (currentAngle == std::nan("")) {
-            nanCount ++;
-            if (nanCount % 1000 == 0) {
-                pros::lcd::print(3,"XPos %f", XPos);
-            }
-            continue;
+        if(IMU.is_calibrating()){
+            currentAngle = 0;
         }
         //currentAngle = (LM_moved - RM_moved)/(RTrackRadius+LTrackRadius);
-        if (currentAngle < 0) {
-            currentAngle += 2 * M_PI;
-        } else if (currentAngle > 2 * M_PI) {
-            currentAngle -= 2 * M_PI;
-        }
-
         deltaTheta = currentAngle - prevAngle;
         halfDeltaTheta = deltaTheta / 2.0;
         prevAngle = currentAngle;
@@ -114,6 +102,7 @@ void recordPosition(){//repeatdly call
         //pros::lcd::print(3,"%f, %f, %f", deltaTheta,RM_moved, LM_moved);
         //pros::lcd::print(4,"%f",avgThetaForArc);
         //master.print(2,3,"important %f", YPos);
+        pros::delay(10);
     }
 }
 /*void JAR_position(float ForwardTracker_position, float SidewaysTracker_position, float orientation_deg){

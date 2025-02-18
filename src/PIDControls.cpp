@@ -11,12 +11,12 @@ void tareMotors() {
 }
 void turn(double heading, double Kp, double Kd, double Ki, double O, double U) { //turns a certain amount of degrees
 /*New turn code with IMU*/
-double prevX = XPos;
-double prevY = YPos;
 
-double error = heading-IMU.get_heading();
+double error = heading-IMU.get_rotation();
 error *= O;
 error /= U;
+double XDiff = XPos;
+double YDiff = YPos;
     if(fabs(error) > 180){
         // TODO: Why it is always -360? What if heading is -190?
         error -= 360;
@@ -25,7 +25,7 @@ error /= U;
     double integral = 0;
     double threshold = 20;
     while(true){
-        error = heading - IMU.get_heading();
+        error = heading - IMU.get_rotation();
         integral += error;
         if(fabs(error)>threshold){
             integral = 0;
@@ -49,9 +49,9 @@ error /= U;
         }
     }
    stopMotors();
-   XPos = prevX;
-   YPos=prevY;
    pros::lcd::print(1, "degrees after %f", IMU.get_rotation());
+   XPos = XDiff;
+   YPos = YDiff;
 }
 void PIDArm(){
     Rsensor.reset_position();
@@ -150,8 +150,8 @@ void move(double targetX, double targetY, double kP, double kI, double kD) {
    // TODO: HX comment, the following two lines do not do anything, the value calculated is not assigned back.
    // They can be removed.
    while(targetR > rightMeasured || targetL > leftMeasured){
-    integralR = (targetR - OPR)/driveTicksPerInch;
-    integralL = (targetL - OPL)/driveTicksPerInch;
+    integralR = (targetR - rightMeasured)/driveTicksPerInch;
+    integralL = (targetL - leftMeasured)/driveTicksPerInch;
     if(integralR > 300){
         integralL  = 300;
     }
@@ -159,16 +159,24 @@ void move(double targetX, double targetY, double kP, double kI, double kD) {
         integralL = 300;
     }
     currentHeading = (IMU.get_heading()* M_PI)/180;
+    if(XDiff > 0){
     moveRight((integralR*kI) + targetInches * kP - (targetHeading - currentHeading) * kD);
     moveLeft((integralL*kI) + targetInches*kP + (targetHeading - currentHeading) * kD);
     leftMeasured = ((LB_MOTOR.get_position() + LF_MOTOR.get_position() + LM_MOTOR.get_position())/3);
     rightMeasured =((RB_MOTOR.get_position() + RF_MOTOR.get_position() + RM_MOTOR.get_position())/3);
+    }
+    else{
+    moveRight((integralR*kI) + targetInches * kP + (targetHeading - currentHeading) * kD);
+    moveLeft((integralL*kI) + targetInches*kP - (targetHeading - currentHeading) * kD);
+    leftMeasured = ((LB_MOTOR.get_position() + LF_MOTOR.get_position() + LM_MOTOR.get_position())/3);
+    rightMeasured =((RB_MOTOR.get_position() + RF_MOTOR.get_position() + RM_MOTOR.get_position())/3);
+    }
 }
 stopMotors();
 }
 void moveBack(double distance, double kP, double kI, double kD) {
-    double OPL = ((LB_MOTOR.get_position() + LF_MOTOR.get_position() + LM_MOTOR.get_position())/3);
-    double OPR = ((RB_MOTOR.get_position() + RF_MOTOR.get_position() + RM_MOTOR.get_position())/3);
+    double OPL = (LM_MOTOR.get_position());
+    double OPR = (RM_MOTOR.get_position());
    double rightOutput = 0.0;
    double leftOutput = 0.0;
 
@@ -185,18 +193,65 @@ void moveBack(double distance, double kP, double kI, double kD) {
    // TODO: HX comment, the following two lines do not do anything, the value calculated is not assigned back.
    // They can be removed.
    while(targetR < rightMeasured || targetL < leftMeasured){
-    integralR = (OPR - targetR)/driveTicksPerInch;
-    integralL = (OPL - targetR)/driveTicksPerInch;
+    integralR = (rightMeasured - targetR)/driveTicksPerInch;
+    integralL = (leftMeasured - targetL)/driveTicksPerInch;
+    if(integralR > 300){
+        integralR  = 300;
+    }
+    if(integralL > 300){
+        integralL = 300;
+    }
+    moveRight(-(integralR*kI) - (targetInches * kP));
+    moveLeft(-(integralL*kI) - (targetInches * kP));
+    leftMeasured = (LM_MOTOR.get_position());
+    rightMeasured = (RM_MOTOR.get_position());
+}
+stopMotors();
+}
+void moveBackTracking(double targetX, double targetY, double kP, double kI, double kD) {
+    double OPL = ((LB_MOTOR.get_position() + LF_MOTOR.get_position() + LM_MOTOR.get_position())/3);
+    double OPR = ((RB_MOTOR.get_position() + RF_MOTOR.get_position() + RM_MOTOR.get_position())/3);
+   double rightOutput = 0.0;
+   double leftOutput = 0.0;
+   double XDiff = targetX - XPos;
+   double YDiff = targetY-YPos;
+   double distance = sqrt((XDiff*XDiff) + (YDiff*YDiff));
+   double targetInches = distance;
+   distance *= driveTicksPerInch;
+   double targetR = OPR - distance;
+   double targetL = OPL - distance;
+   double rightMeasured = OPR;
+   double leftMeasured = OPL;
+   double error = 0.0;//error between the two sides
+   double distanceT = 0.0;//area under the curve
+   double integralR = 0.0;
+   double integralL = 0.0;
+   double targetHeading = atan(XDiff/YDiff);
+   double currentHeading = (IMU.get_heading()* M_PI)/180;
+   // TODO: HX comment, the following two lines do not do anything, the value calculated is not assigned back.
+   // They can be removed.
+   while(targetR < rightMeasured || targetL < leftMeasured){
+    integralR = (targetR - rightMeasured)/driveTicksPerInch;
+    integralL = (targetL - leftMeasured)/driveTicksPerInch;
     if(integralR > 300){
         integralL  = 300;
     }
     if(integralL > 300){
         integralL = 300;
     }
-    moveRight(-(integralR*kI) - targetInches * kP);
-    moveLeft(-(integralL*kI) - targetInches * kP);
+    currentHeading = (IMU.get_heading()* M_PI)/180;
+    if(XDiff > 0){
+    moveRight((integralR*kI) + targetInches * kP - (targetHeading - currentHeading) * kD);
+    moveLeft((integralL*kI) + targetInches*kP + (targetHeading - currentHeading) * kD);
     leftMeasured = ((LB_MOTOR.get_position() + LF_MOTOR.get_position() + LM_MOTOR.get_position())/3);
-    rightMeasured = ((RB_MOTOR.get_position() + RF_MOTOR.get_position() + RM_MOTOR.get_position())/3);
+    rightMeasured =((RB_MOTOR.get_position() + RF_MOTOR.get_position() + RM_MOTOR.get_position())/3);
+    }
+    else{
+    moveRight((integralR*kI) + targetInches * kP + (targetHeading - currentHeading) * kD);
+    moveLeft((integralL*kI) + targetInches*kP - (targetHeading - currentHeading) * kD);
+    leftMeasured = ((LB_MOTOR.get_position() + LF_MOTOR.get_position() + LM_MOTOR.get_position())/3);
+    rightMeasured =((RB_MOTOR.get_position() + RF_MOTOR.get_position() + RM_MOTOR.get_position())/3);
+    }
 }
 stopMotors();
 }
