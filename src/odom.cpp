@@ -20,9 +20,18 @@ double RM_position = 0, LM_position = 0, BM_position = 0;
 double RMPrevPos = 0, LMPrevPos = 0, BMPrevPos = 0;
 
 void recordPosition(){//repeatdly call
+    //while(IMU.is_calibrating()){
+        //pros::delay(50);
+    //}
+    int count = 0;
+    pros::delay(2000);
+
     Odometry.set_position(0);
+    IMU.set_heading(0);
+    IMU.set_rotation(0);
+    tareMotors();
     Odometry.set_data_rate(5);
-    double RM_position = 0, LM_position = 0;
+    //double RM_position = 0, LM_position = 0;
     double RM_moved = 0, LM_moved = 0, BM_moved = 0;
     double halfDeltaTheta = 0;
     //double avgThetaForArc = 0;
@@ -32,11 +41,6 @@ void recordPosition(){//repeatdly call
     //The X and Y offsets converted from their local forms (INCHES)
     double deltaYGlobal = 0;
     //pros::delay(2000);
-    while(IMU.is_calibrating()){
-        pros::delay(50);
-    }
-    int count = 0;
-    pros::delay(2000);
     while(true){
         /*
         if (abs(deltaXGlobal == std::nan("")) || abs(deltaYGlobal == std::nan(""))) {
@@ -58,7 +62,7 @@ void recordPosition(){//repeatdly call
         RMPrevPos = RM_position;
         LMPrevPos = LM_position;
         BMPrevPos = BM_position;
-        double currentAngle = IMU.get_heading() * M_PI / 180.0;
+        double currentAngle = IMU.get_rotation() * M_PI / 180.0;
         //if(IMU.is_calibrating()){
             //currentAngle = 0;
         //}
@@ -70,11 +74,12 @@ void recordPosition(){//repeatdly call
         // If the deltaTheta is too much, If we didn't turn, then we only translated
         if(abs(deltaTheta) != 0) {
             deltaXLocal = 2 * sin(halfDeltaTheta) * ((BM_moved / deltaTheta) + BTrackRadius);// print out (BM_moved / deltaTheta) + BTrackRadius
-            deltaYLocal = 2 * sin(halfDeltaTheta) * ((RM_moved / deltaTheta)+ RTrackRadius);
+            deltaYLocal = 2 * sin(halfDeltaTheta) * ((RM_moved / deltaTheta) + RTrackRadius);
 
             count ++;
 
             if (count == 1) {
+                pros::lcd::print(6,"%f, %f, %f",  prevAngle,currentAngle, deltaTheta);
                 pros::lcd::print(7,"%f, %f, %f",  BM_moved,RM_moved, deltaTheta);
                 break;
             }
@@ -86,7 +91,7 @@ void recordPosition(){//repeatdly call
             // could be either L or R, since if deltaTheta == 0 we assume they're =
             deltaYLocal = LM_moved;
             halfDeltaTheta = 0;
-            pros::lcd::print(6,"%f, %f, %f",  BM_moved,RM_moved, deltaTheta);
+            pros::lcd::print(5,"%f, %f, %f",  BM_moved,RM_moved, deltaTheta);
         }
 
 
@@ -96,9 +101,9 @@ void recordPosition(){//repeatdly call
         deltaYGlobal = (deltaYLocal * cos(avgThetaForArc)) - (deltaXLocal * sin(avgThetaForArc));
         //deltaYGlobal = deltaYLocal;
         deltaXGlobal = (deltaYLocal * sin(avgThetaForArc)) + (deltaXLocal * cos(avgThetaForArc));
-        if (abs(deltaXGlobal) == std::nan("") || abs(deltaYGlobal) == std::nan("")) {
-             continue;
-        }
+        //if (abs(deltaXGlobal) == std::nan("") || abs(deltaYGlobal) == std::nan("")) {
+             //continue;
+        //}
         
         //pros::lcd::print(7,"BM and RM %f, %f", (BM_moved / deltaTheta) + BTrackRadius, ((RM_moved / deltaTheta)+ RTrackRadius));
         XPos += deltaXGlobal;

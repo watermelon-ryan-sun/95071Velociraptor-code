@@ -370,9 +370,10 @@ void test(){
 void specialOdomSkills(){
 	XPos = 0;
 	YPos = 0;
-	IMU.set_heading(0);
-	pros::delay(2000);
+	//IMU.set_heading(0);
+	//pros::delay(1000);
 	pros::Task OdomCalib(recordPosition);
+	pros::delay(3000);
 	//turn(245,2.5,0.2,0.1,1,1);
 	turn(-115,2.5,0.2,0.1,1,1);
 	/*pros::delay(50);

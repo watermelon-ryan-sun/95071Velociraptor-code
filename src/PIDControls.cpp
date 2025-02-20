@@ -49,7 +49,7 @@ double YDiff = YPos;
         }
     }
    stopMotors();
-   pros::lcd::print(1, "degrees after %f", IMU.get_rotation());
+   pros::lcd::print(1, "degrees after %f, %f", IMU.get_rotation(), IMU.get_heading());
    /*XPos = XDiff;
    YPos = YDiff;*/
 }

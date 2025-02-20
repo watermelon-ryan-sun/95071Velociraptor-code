@@ -116,9 +116,9 @@ specialOdomSkills();
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-	IMU.set_heading(0);
+	//IMU.set_heading(0);
 	while(true){
-	pros::lcd::print(0, "%f, %f, %f", XPos, YPos,IMU.get_rotation());
+	pros::lcd::print(0, "%f, %f, %f, %f", XPos, YPos,IMU.get_rotation(), IMU.get_heading());
 	pros::delay(500);
 	}
 }
