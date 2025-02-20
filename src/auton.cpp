@@ -358,24 +358,35 @@ void skills2(){
 	pros::delay(50);
 	clampRelease();
 	move(10,0.2,0.3,0.2);*/
-void specialOdomSkills(){
+void test(){
 	pros::delay(2000);
 	XPos = 0;
 	YPos = 0;
+	move(0,96,2,3,0);
+	pros::delay(50);
+	turn(-90,2.5,0.2,0.1,1,1);
+	move(-72,96,2,3,0);
+}
+void specialOdomSkills(){
+	XPos = 0;
+	YPos = 0;
+	IMU.set_heading(0);
+	pros::delay(2000);
+	pros::Task OdomCalib(recordPosition);
 	//turn(245,2.5,0.2,0.1,1,1);
 	turn(-115,2.5,0.2,0.1,1,1);
-	pros::delay(50);
+	/*pros::delay(50);
 	moveBack(20,9,2,1);
-	pros::delay(50);
+	/*pros::delay(50);
 	/*clampDown();
 	pros::delay(50);
 	RunIntake();*/
-	turn(0,2.5,0.2,0.1,1,1);
+	/*turn(0,2.5,0.2,0.1,1,1);
 	pros::delay(50);
 	master.print(0,0, "%f, %f", XPos, YPos);
 	move(24,29,4,6,12);
 	pros::delay(50);
-	turn(90,2.5,0.2,0.1,1,1);
+	/*turn(90,2.5,0.2,0.1,1,1);
 	pros::delay(50);
 	move(34,48,5,4,13);
 	pros::delay(50);
@@ -387,7 +398,7 @@ void specialOdomSkills(){
 	pros::delay(50);
 	turn(180,2.5,0.2,0.1,1,1);
 	pros::delay(50);
-	move(48,0,5,7,9);
+	move(48,8,5,7,9);
 	pros::delay(50);
 	moveBack(24,5,5,1);
 	pros::delay(50);
@@ -395,14 +406,14 @@ void specialOdomSkills(){
 	pros::delay(50);
 	turn(330,2.5,0.2,0.1,1,1);
 	pros::delay(50);
-	moveBack(5,20,5,1);
+	/*moveBack(5,20,5,1);
 	pros::delay(50);
 	turn(95,2.5,0.2,0.1,1,1);
 	pros::delay(50);
 	moveBack(76,3,5,1);
 	pros::delay(50);
 	master.print(0,0, "%f, %f", XPos, YPos);
-	turn(0,2.5,0.2,0.1,1,1);
+	/*turn(0,2.5,0.2,0.1,1,1);
 	pros::delay(50);
 	move(-24,36,5,8,8);
 	pros::delay(50);
@@ -412,15 +423,15 @@ void specialOdomSkills(){
 	pros::delay(50);
 	turn(-45,2.5,0.2,0.3,1,1);
 	pros::delay(50);
-	move(-52,50,10,5,0);
+	move(-52,50,10,5,13);
 	pros::delay(50);
 	turn(180,2.5,0.2,0.1,1,1);
 	pros::delay(50);
-	move(-48,0,5,4,12);
+	move(-48,8,5,4,12);
 	pros::delay(50);
 	turn(-45,2.5,0.2,0.1,1,1);
 	pros::delay(50);
-	move(-50,6,5,3,4);
+	move(-50,12,5,3,2);
 	pros::delay(50);
 	moveBack(12,5,9,1);
 	pros::delay(50);
@@ -428,10 +439,21 @@ void specialOdomSkills(){
 	pros::delay(50);
 	move(-48,78,5,8,6);
 	pros::delay(50);
-	turn(-135,2.5,0.2,0.1,1,1);
+	turn(-100,2.5,0.2,0.1,1,1);
 	pros::delay(50);
 	moveBack(36,5,5,1);
 	pros::delay(50);
+	turn(-90,2.5,0.2,0.1,1,1);
+	pros::delay(50);
+	move(-55,96,5,5,13);
+	pros::delay(50);
+	turn(45,2.5,0.2,0.1,1,1);
+	pros::delay(50);
+	move(-50,100,5,5,13);
+	pros::delay(50);
+	turn(90,2.5,0.2,0.1,1,1);
+	pros::delay(50);
+	moveBack(120,5,5,8);
 
 	while(true){
 	master.print(0,0, "%f, %f", XPos, YPos);
@@ -456,5 +478,9 @@ void specialOdomSkills(){
 	pros::delay(50);
 	move(-52,48,5,9,13);
 	master.print(0,0, "%f, %f", XPos, YPos);*/
-
+	while(true){
+	master.print(0,0, "%f, %f", XPos, YPos);
+	pros::lcd::print(0, "%f, %f, %f", XPos, YPos,IMU.get_rotation());
+	pros::delay(500);
+	}
 }

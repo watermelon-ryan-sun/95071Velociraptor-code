@@ -8,4 +8,5 @@ void blueSRightAWP();
 void skills();
 void specialOdomSkills();
 void skills2();
+void test();
 #endif

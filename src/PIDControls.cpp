@@ -50,8 +50,8 @@ double YDiff = YPos;
     }
    stopMotors();
    pros::lcd::print(1, "degrees after %f", IMU.get_rotation());
-   XPos = XDiff;
-   YPos = YDiff;
+   /*XPos = XDiff;
+   YPos = YDiff;*/
 }
 void PIDArm(){
     Rsensor.reset_position();
@@ -147,6 +147,7 @@ void move(double targetX, double targetY, double kP, double kI, double kD) {
    double integralL = 0.0;
    double targetHeading = atan(XDiff/YDiff);
    double currentHeading = (IMU.get_heading()* M_PI)/180;
+   double changeHeading = targetHeading - currentHeading;
    // TODO: HX comment, the following two lines do not do anything, the value calculated is not assigned back.
    // They can be removed.
    while(targetR > rightMeasured || targetL > leftMeasured){
@@ -158,19 +159,16 @@ void move(double targetX, double targetY, double kP, double kI, double kD) {
     if(integralL > 300){
         integralL = 300;
     }
+    targetHeading = atan(XDiff/YDiff);
     currentHeading = (IMU.get_heading()* M_PI)/180;
-    if(XDiff > 0){
+    changeHeading = targetHeading - currentHeading;
+    if(changeHeading > M_PI*2){
+        changeHeading -= 2*M_PI;
+    }
     moveRight((integralR*kI) + targetInches * kP - (targetHeading - currentHeading) * kD);
     moveLeft((integralL*kI) + targetInches*kP + (targetHeading - currentHeading) * kD);
     leftMeasured = ((LB_MOTOR.get_position() + LF_MOTOR.get_position() + LM_MOTOR.get_position())/3);
     rightMeasured =((RB_MOTOR.get_position() + RF_MOTOR.get_position() + RM_MOTOR.get_position())/3);
-    }
-    else{
-    moveRight((integralR*kI) + targetInches * kP + (targetHeading - currentHeading) * kD);
-    moveLeft((integralL*kI) + targetInches*kP - (targetHeading - currentHeading) * kD);
-    leftMeasured = ((LB_MOTOR.get_position() + LF_MOTOR.get_position() + LM_MOTOR.get_position())/3);
-    rightMeasured =((RB_MOTOR.get_position() + RF_MOTOR.get_position() + RM_MOTOR.get_position())/3);
-    }
 }
 stopMotors();
 }
@@ -228,6 +226,7 @@ void moveBackTracking(double targetX, double targetY, double kP, double kI, doub
    double integralL = 0.0;
    double targetHeading = atan(XDiff/YDiff);
    double currentHeading = (IMU.get_heading()* M_PI)/180;
+   double changeHeading = targetHeading - currentHeading;
    // TODO: HX comment, the following two lines do not do anything, the value calculated is not assigned back.
    // They can be removed.
    while(targetR < rightMeasured || targetL < leftMeasured){
@@ -239,7 +238,12 @@ void moveBackTracking(double targetX, double targetY, double kP, double kI, doub
     if(integralL > 300){
         integralL = 300;
     }
+    targetHeading = atan(XDiff/YDiff);
     currentHeading = (IMU.get_heading()* M_PI)/180;
+    changeHeading = targetHeading - currentHeading;
+    if(changeHeading > M_PI*2){
+        changeHeading -= 2*M_PI;
+    }
     if(XDiff > 0){
     moveRight((integralR*kI) + targetInches * kP - (targetHeading - currentHeading) * kD);
     moveLeft((integralL*kI) + targetInches*kP + (targetHeading - currentHeading) * kD);

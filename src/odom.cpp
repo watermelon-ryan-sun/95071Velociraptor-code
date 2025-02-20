@@ -4,9 +4,9 @@
 #include "PIDControls.h"
 
 //Distances of tracking wheels from tracking center (INCHES)
-static const double LTrackRadius = 5;//~5 now
-static const double RTrackRadius = 5;
-static const double BTrackRadius = 3.5;
+static const double LTrackRadius = 4.25;//~5 now
+static const double RTrackRadius = 6.8;
+static const double BTrackRadius = 2.8;
 
 volatile double XPos = 0;
 volatile double YPos = 0;
@@ -21,20 +21,22 @@ double RMPrevPos = 0, LMPrevPos = 0, BMPrevPos = 0;
 
 void recordPosition(){//repeatdly call
     Odometry.set_position(0);
-    Odometry.set_data_rate(11);
+    Odometry.set_data_rate(5);
     double RM_position = 0, LM_position = 0;
     double RM_moved = 0, LM_moved = 0, BM_moved = 0;
     double halfDeltaTheta = 0;
     //double avgThetaForArc = 0;
     //The changes in the X and Y positions (INCHES)
-    double deltaXLocal = deltaXLocal;
+    double deltaXLocal = 0;
 
     //The X and Y offsets converted from their local forms (INCHES)
     double deltaYGlobal = 0;
-    pros::delay(2000);
+    //pros::delay(2000);
     while(IMU.is_calibrating()){
         pros::delay(50);
     }
+    int count = 0;
+    pros::delay(2000);
     while(true){
         /*
         if (abs(deltaXGlobal == std::nan("")) || abs(deltaYGlobal == std::nan(""))) {
@@ -57,26 +59,34 @@ void recordPosition(){//repeatdly call
         LMPrevPos = LM_position;
         BMPrevPos = BM_position;
         double currentAngle = IMU.get_heading() * M_PI / 180.0;
-        if(IMU.is_calibrating()){
-            currentAngle = 0;
-        }
+        //if(IMU.is_calibrating()){
+            //currentAngle = 0;
+        //}
         //currentAngle = (LM_moved - RM_moved)/(RTrackRadius+LTrackRadius);
         deltaTheta = currentAngle - prevAngle;
         halfDeltaTheta = deltaTheta / 2.0;
         prevAngle = currentAngle;
 
         // If the deltaTheta is too much, If we didn't turn, then we only translated
-        if(abs(deltaTheta) <= M_PI/180) {
-            deltaXLocal = BM_moved;
-            // could be either L or R, since if deltaTheta == 0 we assume they're =
-            deltaYLocal = LM_moved;
-            halfDeltaTheta = 0;
+        if(abs(deltaTheta) != 0) {
+            deltaXLocal = 2 * sin(halfDeltaTheta) * ((BM_moved / deltaTheta) + BTrackRadius);// print out (BM_moved / deltaTheta) + BTrackRadius
+            deltaYLocal = 2 * sin(halfDeltaTheta) * ((RM_moved / deltaTheta)+ RTrackRadius);
+
+            count ++;
+
+            if (count == 1) {
+                pros::lcd::print(7,"%f, %f, %f",  BM_moved,RM_moved, deltaTheta);
+                break;
+            }
         } else {  //Else, caluclate the new local position
             //Calculate the changes in the X and Y values (INCHES)
             //General equation is:
                 //Distance = 2 * Radius * sin(deltaTheta / 2)
-            deltaXLocal = 2 * sin(halfDeltaTheta) * ((BM_moved / deltaTheta));
-            deltaYLocal = 2 * sin(halfDeltaTheta) * ((RM_moved / deltaTheta));
+            deltaXLocal = BM_moved;
+            // could be either L or R, since if deltaTheta == 0 we assume they're =
+            deltaYLocal = LM_moved;
+            halfDeltaTheta = 0;
+            pros::lcd::print(6,"%f, %f, %f",  BM_moved,RM_moved, deltaTheta);
         }
 
 
@@ -89,20 +99,14 @@ void recordPosition(){//repeatdly call
         if (abs(deltaXGlobal) == std::nan("") || abs(deltaYGlobal) == std::nan("")) {
              continue;
         }
-        if (deltaXGlobal > 30.0) {
-            pros::lcd::print(7,"jumped");
-            pros::lcd::print(1,"thetaArcJumped:%f",avgThetaForArc);
-            pros::lcd::print(2,"X,%f, Y,%f", LM_MOTOR.get_position(),LMPrevPos);
-            std::cout << "x" << deltaYLocal << std::endl;
-        }
-
+        
+        //pros::lcd::print(7,"BM and RM %f, %f", (BM_moved / deltaTheta) + BTrackRadius, ((RM_moved / deltaTheta)+ RTrackRadius));
         XPos += deltaXGlobal;
         YPos += deltaYGlobal;
-
+        pros::delay(100);
         //pros::lcd::print(3,"%f, %f, %f", deltaTheta,RM_moved, LM_moved);
         //pros::lcd::print(4,"%f",avgThetaForArc);
         //master.print(2,3,"important %f", YPos);
-        pros::delay(10);
     }
 }
 /*void JAR_position(float ForwardTracker_position, float SidewaysTracker_position, float orientation_deg){
