@@ -4,9 +4,9 @@
 #include "PIDControls.h"
 
 //Distances of tracking wheels from tracking center (INCHES)
-static const double LTrackRadius = 4.25;//~5 now
-static const double RTrackRadius = 6.8;
-static const double BTrackRadius = 2.8;
+static const double LTrackRadius = -5.5;//~5 now
+static const double RTrackRadius = 6.2;
+static const double BTrackRadius = 0.5;
 
 volatile double XPos = 0;
 volatile double YPos = 0;
@@ -24,7 +24,7 @@ void recordPosition(){//repeatdly call
         //pros::delay(50);
     //}
     int count = 0;
-    pros::delay(2000);
+    pros::delay(1500);
 
     Odometry.set_position(0);
     IMU.set_heading(0);
@@ -72,16 +72,13 @@ void recordPosition(){//repeatdly call
         prevAngle = currentAngle;
 
         // If the deltaTheta is too much, If we didn't turn, then we only translated
-        if(abs(deltaTheta) != 0) {
+        if(deltaTheta != 0) {
             deltaXLocal = 2 * sin(halfDeltaTheta) * ((BM_moved / deltaTheta) + BTrackRadius);// print out (BM_moved / deltaTheta) + BTrackRadius
             deltaYLocal = 2 * sin(halfDeltaTheta) * ((RM_moved / deltaTheta) + RTrackRadius);
-
             count ++;
-
-            if (count == 1) {
+            if (deltaTheta != 0) {
                 pros::lcd::print(6,"%f, %f, %f",  prevAngle,currentAngle, deltaTheta);
                 pros::lcd::print(7,"%f, %f, %f",  BM_moved,RM_moved, deltaTheta);
-                break;
             }
         } else {  //Else, caluclate the new local position
             //Calculate the changes in the X and Y values (INCHES)
@@ -108,7 +105,7 @@ void recordPosition(){//repeatdly call
         //pros::lcd::print(7,"BM and RM %f, %f", (BM_moved / deltaTheta) + BTrackRadius, ((RM_moved / deltaTheta)+ RTrackRadius));
         XPos += deltaXGlobal;
         YPos += deltaYGlobal;
-        pros::delay(100);
+        pros::delay(10);
         //pros::lcd::print(3,"%f, %f, %f", deltaTheta,RM_moved, LM_moved);
         //pros::lcd::print(4,"%f",avgThetaForArc);
         //master.print(2,3,"important %f", YPos);

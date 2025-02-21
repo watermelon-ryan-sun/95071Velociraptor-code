@@ -117,6 +117,8 @@ specialOdomSkills();
  */
 void opcontrol() {
 	//IMU.set_heading(0);
+	pros::delay(2000);
+	specialOdomSkills();
 	while(true){
 	pros::lcd::print(0, "%f, %f, %f, %f", XPos, YPos,IMU.get_rotation(), IMU.get_heading());
 	pros::delay(500);

@@ -11,12 +11,11 @@ void tareMotors() {
 }
 void turn(double heading, double Kp, double Kd, double Ki, double O, double U) { //turns a certain amount of degrees
 /*New turn code with IMU*/
-
+double XDiff = XPos;
+double YDiff = YPos;
 double error = heading-IMU.get_rotation();
 error *= O;
 error /= U;
-double XDiff = XPos;
-double YDiff = YPos;
     if(fabs(error) > 180){
         // TODO: Why it is always -360? What if heading is -190?
         error -= 360;
@@ -48,6 +47,8 @@ double YDiff = YPos;
             break;
         }
     }
+    XPos = XDiff;
+    YPos = YDiff;
    stopMotors();
    pros::lcd::print(1, "degrees after %f, %f", IMU.get_rotation(), IMU.get_heading());
    /*XPos = XDiff;
@@ -148,6 +149,9 @@ void move(double targetX, double targetY, double kP, double kI, double kD) {
    double targetHeading = atan(XDiff/YDiff);
    double currentHeading = (IMU.get_heading()* M_PI)/180;
    double changeHeading = targetHeading - currentHeading;
+   double prevR = 0;
+   double prevL = 0;
+   double stallC = 0;
    // TODO: HX comment, the following two lines do not do anything, the value calculated is not assigned back.
    // They can be removed.
    while(targetR > rightMeasured || targetL > leftMeasured){
@@ -165,10 +169,21 @@ void move(double targetX, double targetY, double kP, double kI, double kD) {
     if(changeHeading > M_PI*2){
         changeHeading -= 2*M_PI;
     }
+    if(changeHeading < -M_PI * 2){
+        changeHeading += 2*M_PI;
+    }
+        if(XPos > 0){
     moveRight((integralR*kI) + targetInches * kP - (targetHeading - currentHeading) * kD);
     moveLeft((integralL*kI) + targetInches*kP + (targetHeading - currentHeading) * kD);
     leftMeasured = ((LB_MOTOR.get_position() + LF_MOTOR.get_position() + LM_MOTOR.get_position())/3);
     rightMeasured =((RB_MOTOR.get_position() + RF_MOTOR.get_position() + RM_MOTOR.get_position())/3);
+    }
+    else{
+    moveRight((integralR*kI) + targetInches * kP + (targetHeading - currentHeading) * kD);
+    moveLeft((integralL*kI) + targetInches*kP - (targetHeading - currentHeading) * kD);
+    leftMeasured = ((LB_MOTOR.get_position() + LF_MOTOR.get_position() + LM_MOTOR.get_position())/3);
+    rightMeasured =((RB_MOTOR.get_position() + RF_MOTOR.get_position() + RM_MOTOR.get_position())/3);
+    }
 }
 stopMotors();
 }
