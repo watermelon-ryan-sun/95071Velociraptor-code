@@ -147,7 +147,7 @@ void move(double targetX, double targetY, double kP, double kI, double kD) {
    double integralR = 0.0;
    double integralL = 0.0;
    double targetHeading = atan(XDiff/YDiff);
-   double currentHeading = (IMU.get_heading()* M_PI)/180;
+   double currentHeading = (IMU.get_rotation()* M_PI)/180;
    double changeHeading = targetHeading - currentHeading;
    double prevR = 0;
    double prevL = 0;
@@ -164,7 +164,7 @@ void move(double targetX, double targetY, double kP, double kI, double kD) {
         integralL = 300;
     }
     targetHeading = atan(XDiff/YDiff);
-    currentHeading = (IMU.get_heading()* M_PI)/180;
+    currentHeading = (IMU.get_rotation()* M_PI)/180;
     changeHeading = targetHeading - currentHeading;
     if(changeHeading > M_PI*2){
         changeHeading -= 2*M_PI;
