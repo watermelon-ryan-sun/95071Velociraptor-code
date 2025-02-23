@@ -12,7 +12,9 @@ void intake_fn(){
       }
    }
 }
-
+void turnToPoint(double targX, double targY){
+   
+}
 void driveFunc(double power, double turn) {
    //puts controls into a cubed function to avoid jerk(lurch)
    double left = power + (turn);

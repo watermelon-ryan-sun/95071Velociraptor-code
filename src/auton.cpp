@@ -364,6 +364,27 @@ void test(){
 	YPos = 0;
 	move(-24,24,2,3,0);
 }
+void OdomSkills(){
+	pros::Task OdomCalib(recordPosition);
+	pros::delay(3000);
+	XPos = 0;
+	YPos = -4;
+	intake.move_velocity(500);
+	pros::delay(500);
+	move(0,0,5,5,0);
+	turn(-84,2.5,0.3,0.2,1,1);
+	pros::delay(50);
+	moveBack(20,9,2,1);
+	pros::delay(400);
+	clampDown();
+	turn(0,2.5,0.2,0.1,1,1);
+	pros::delay(50);
+	move(24,48,5,3,13);
+	pros::delay(50);
+	
+
+	pros::delay(50);
+}
 void specialOdomSkills(){
 	//IMU.set_heading(0);
 	//pros::delay(1000);

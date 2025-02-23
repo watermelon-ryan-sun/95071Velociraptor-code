@@ -401,7 +401,6 @@ stopMotors();
    stopMotors();
 }*/
 
-
 void RunIntake(double target){
     double blue = 0;//arbiturary values for now
     double red = 0;
