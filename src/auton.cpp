@@ -411,6 +411,7 @@ void specialOdomSkills(){
 	moveBack(13,20,5,1);
 	pros::delay(50);
 	clampRelease();
+	intake.move_velocity(0);
 	move(48,0,5,3,8);
 	pros::delay(50);
 	turn(105,1.5,0.2,0.1,1,1);
@@ -419,6 +420,7 @@ void specialOdomSkills(){
 	pros::delay(50);
 	master.print(0,0, "%f, %f", XPos, YPos);
 	clampDown();
+	intake.move_velocity(500);
 	pros::delay(50);
 	turn(0,2.5,0.2,0.1,1,1);
 	pros::delay(50);
@@ -445,6 +447,7 @@ void specialOdomSkills(){
 	moveBack(12,5,9,1);
 	pros::delay(50);
 	clampRelease();
+	intake.move_velocity(0);
 	move(-50,12,5,3,2);
 	pros::delay(50);
 	turn(0,2.5,0.2,0.1,1,1);
@@ -456,6 +459,7 @@ void specialOdomSkills(){
 	moveBack(47,5,5,1);
 	pros::delay(50);
 	clampDown();
+	intake.move_velocity(500);
 	turn(-135,2.5,0.2,0.1,1,1);
 	pros::delay(50);
 	move(-24,72,5,5,5);
