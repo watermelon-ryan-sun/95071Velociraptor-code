@@ -381,6 +381,11 @@ void OdomSkills(){
 	pros::delay(50);
 	move(24,48,5,3,13);
 	pros::delay(50);
+	turn(50,2.5,0.2,0.1,1,1);
+	pros::delay(50);
+	move(58,108,5,3,13);
+	pros::delay(50);
+	
 	
 
 	pros::delay(50);
