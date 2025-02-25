@@ -11,14 +11,19 @@ void tareMotors() {
 }
 void turn(double heading, double Kp, double Kd, double Ki, double O, double U) { //turns a certain amount of degrees
 /*New turn code with IMU*/
-double XDiff = XPos;
-double YDiff = YPos;
 double error = heading-IMU.get_rotation();
 error *= O;
 error /= U;
-    if(fabs(error) > 180){
+    if(error > 180){
         // TODO: Why it is always -360? What if heading is -190?
-        error -= 360;
+        while(error > 180){
+            error -= 360;
+        }
+    }
+    if(error < -180){
+        while(error < -180){
+        error += 360;
+        }
     }
     double prevError = 0;
     double integral = 0;
@@ -40,15 +45,17 @@ error /= U;
         // My point is that if the angle is less than 1.0, it should not
         // wait for another turn to break. 
         // 1.0 is too large as well.
-        if(abs(error) < 0.01){
+        // abs() is used only for int, use fabs?
+        if(fabs(error) < 0.3){
             break;
         }
         if(fabs(prevError)-fabs(error)<0.05 && fabs(error)<0.4){
             break;
         }
     }
-    XPos = XDiff;
-    YPos = YDiff;
+    // Thought we do not remember the previous position?
+    //XPos = XDiff;
+    //YPos = YDiff;
    stopMotors();
    pros::lcd::print(1, "degrees after %f, %f", IMU.get_rotation(), IMU.get_heading());
    /*XPos = XDiff;

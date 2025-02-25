@@ -5,8 +5,8 @@
 
 //Distances of tracking wheels from tracking center (INCHES)
 static const double LTrackRadius = -5.5;//~5 now
-static const double RTrackRadius = 6.2;
-static const double BTrackRadius = 0.5;
+static const double RTrackRadius = 6.3;
+static const double BTrackRadius = -2.5;
 
 volatile double XPos = 0;
 volatile double YPos = 0;
@@ -63,6 +63,12 @@ void recordPosition(){//repeatdly call
         LMPrevPos = LM_position;
         BMPrevPos = BM_position;
         double currentAngle = IMU.get_rotation() * M_PI / 180.0;
+        while(currentAngle <= 0){
+            currentAngle += 360;
+        }
+        while(currentAngle > 360){
+            currentAngle -= 360;
+        }
         //if(IMU.is_calibrating()){
             //currentAngle = 0;
         //}
